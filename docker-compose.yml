@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vcorpstate}
+      POSTGRES_USER: ${POSTGRES_USER:-vcorp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vcorp123}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vcorp}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - BACKEND_PORT=${BACKEND_PORT:-3001}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB:-vcorpstate}
+      - POSTGRES_USER=${POSTGRES_USER:-vcorp}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-vcorp123}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-vcorp}:${POSTGRES_PASSWORD:-vcorp123}@postgres:5432/${POSTGRES_DB:-vcorpstate}
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
+    depends_on:
+      - backend
+    environment:
+      - FRONTEND_PORT=${FRONTEND_PORT:-3000}
+
+volumes:
+  postgres_data:

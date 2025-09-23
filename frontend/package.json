@@ -1,0 +1,12 @@
+{
+  "name": "vcorpstate-frontend",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "shadow-cljs": "^2.25.4"
+  }
+}
