@@ -1,0 +1,1 @@
+["^ ","~$simple-sidebar",["^ ","~:row",4,"~:col",1,"~:fixed-arities",["~#set",[0]],"~:name","^0","~:ns","~$vcorpstate.views.simple-sidebar","~:top-ns","^7","~:arities",["^ ","~i0",["^ ","~:ret","~:vector","~:arglist-str","[]"]],"~:type","~:fn"],"~:filename","/Users/davidcerezo/Projects/vcorpstate/frontend/src/vcorpstate/views/simple_sidebar.cljs"]

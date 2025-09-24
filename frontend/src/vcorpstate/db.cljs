@@ -21,4 +21,7 @@
    :loading? false
    
    ;; Error message (string or nil)
-   :error nil})
+   :error nil
+   
+   ;; Expanded sidebar section (:agents, :tickets, :documents, or nil)
+   :expanded-sidebar-section nil})

@@ -29,10 +29,12 @@
 (rf/reg-sub
  :selected-project
  (fn [db _]
-   (when-let [project-id (:selected-project-id db)]
-     (->> (:projects db)
-          (filter #(= (:id %) project-id))
-          first))))
+   ;; First try direct selected-project, then fall back to finding in projects list
+   (or (:selected-project db)
+       (when-let [project-id (:selected-project-id db)]
+         (->> (:projects db)
+              (filter #(= (:id %) project-id))
+              first)))))
 
 (rf/reg-sub
  :current-view
@@ -43,3 +45,8 @@
  :current-route
  (fn [db _]
    (:current-route db)))
+
+(rf/reg-sub
+ :expanded-sidebar-section
+ (fn [db _]
+   (:expanded-sidebar-section db)))

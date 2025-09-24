@@ -13,11 +13,13 @@ import {
   JobTemplatesResponse,
   ProjectTemplateMetadata,
   ProjectTemplate,
-  DatabaseRole
+  DatabaseRole,
+  DatabaseSquad
 } from './types/index.js';
+import { SQUAD_TEMPLATES } from './templates/squads.js';
 import { ROLE_TEMPLATES } from './templates/roles.js';
 import { WORKFLOW_TEMPLATES } from './templates/workflows.js';
-import { JOB_TEMPLATES, JOB_SEQUENCES } from './templates/jobs.js';
+import { JOB_TEMPLATES } from './templates/jobs.js';
 import { PROJECT_TEMPLATES, TEMPLATE_METADATA } from './templates/project-templates.js';
 
 const app = express();
@@ -65,18 +67,19 @@ app.get('/api/templates/workflows', (req: Request, res: Response) => {
 // Templates API - Get available jobs  
 app.get('/api/templates/jobs', (req: Request, res: Response<JobTemplatesResponse>) => {
   res.json({
-    jobs: JOB_TEMPLATES,
-    sequences: JOB_SEQUENCES
+    jobs: JOB_TEMPLATES
+    // Dependencies emerge from job input/output chains
   });
 });
 
 // Templates API - Get all templates
 app.get('/api/templates', (req: Request, res: Response<TemplatesResponse>) => {
   res.json({
+    squads: SQUAD_TEMPLATES,
     roles: ROLE_TEMPLATES,
     workflows: WORKFLOW_TEMPLATES,
     jobs: JOB_TEMPLATES,
-    sequences: JOB_SEQUENCES,
+    // Dependencies emerge from job input/output chains
     projects: PROJECT_TEMPLATES
   });
 });
@@ -129,6 +132,30 @@ app.post('/api/projects', async (req: Request<{}, CreateProjectResponse | ApiErr
     
     const project = projectResult.rows[0];
     
+    // Create squads for the project from template
+    let squadsResult = { rows: [] as DatabaseSquad[] };
+    if (template.squads && template.squads.length > 0) {
+      const squadInserts = template.squads.map(squad => [
+        project.id,
+        squad.slug,
+        squad.name,
+        squad.description,
+        squad.color
+      ]);
+      
+      const squadValues = squadInserts.map((_, index) => 
+        `($${index * 5 + 1}, $${index * 5 + 2}, $${index * 5 + 3}, $${index * 5 + 4}, $${index * 5 + 5})`
+      ).join(', ');
+      
+      const flatSquadValues = squadInserts.flat();
+      
+      squadsResult = await client.query(
+        `INSERT INTO squads (project_id, slug, name, description, color) 
+         VALUES ${squadValues} RETURNING *`,
+        flatSquadValues
+      );
+    }
+    
     // Create roles for the project from template
     let rolesResult = { rows: [] as DatabaseRole[] };
     if (template.roles && template.roles.length > 0) {
@@ -136,19 +163,78 @@ app.post('/api/projects', async (req: Request<{}, CreateProjectResponse | ApiErr
         project.id,
         role.short_name,
         role.long_name,
+        role.squad_slug,
         role.description_for_agent
       ]);
       
       const roleValues = roleInserts.map((_, index) => 
-        `($${index * 4 + 1}, $${index * 4 + 2}, $${index * 4 + 3}, $${index * 4 + 4})`
+        `($${index * 5 + 1}, $${index * 5 + 2}, $${index * 5 + 3}, $${index * 5 + 4}, $${index * 5 + 5})`
       ).join(', ');
       
       const flatRoleValues = roleInserts.flat();
       
       rolesResult = await client.query(
-        `INSERT INTO roles (project_id, short_name, long_name, description_for_agent) 
+        `INSERT INTO roles (project_id, short_name, long_name, squad_slug, description_for_agent) 
          VALUES ${roleValues} RETURNING *`,
         flatRoleValues
+      );
+    }
+
+    // Create workflows for the project from template
+    let workflowsResult = { rows: [] };
+    if (template.workflows && Object.keys(template.workflows).length > 0) {
+      const workflowInserts = Object.values(template.workflows).map(workflow => [
+        project.id,
+        workflow.slug,
+        workflow.name,
+        workflow.description,
+        workflow.initial_state,
+        JSON.stringify(workflow.states)
+      ]);
+      
+      const workflowValues = workflowInserts.map((_, index) => 
+        `($${index * 6 + 1}, $${index * 6 + 2}, $${index * 6 + 3}, $${index * 6 + 4}, $${index * 6 + 5}, $${index * 6 + 6})`
+      ).join(', ');
+      
+      const flatWorkflowValues = workflowInserts.flat();
+      
+      workflowsResult = await client.query(
+        `INSERT INTO workflows (project_id, slug, name, description, initial_state, states) 
+         VALUES ${workflowValues} RETURNING *`,
+        flatWorkflowValues
+      );
+    }
+
+    // Create jobs for the project from template
+    let jobsResult = { rows: [] };
+    if (template.jobs && template.jobs.length > 0) {
+      // Get the actual job templates by slug
+      const selectedJobs = JOB_TEMPLATES.filter(job => template.jobs.includes(job.slug));
+      
+      const jobInserts = selectedJobs.map(job => [
+        project.id,
+        job.slug,
+        job.name,
+        job.description,
+        Array.isArray(job.role) ? job.role[0] : job.role, // Take first role if array
+        job.workflow_slug,
+        JSON.stringify(job.inputs),
+        JSON.stringify(job.outputs),
+        job.requires_approval,
+        job.auto_start,
+        job.priority
+      ]);
+      
+      const jobValues = jobInserts.map((_, index) => 
+        `($${index * 11 + 1}, $${index * 11 + 2}, $${index * 11 + 3}, $${index * 11 + 4}, $${index * 11 + 5}, $${index * 11 + 6}, $${index * 11 + 7}, $${index * 11 + 8}, $${index * 11 + 9}, $${index * 11 + 10}, $${index * 11 + 11})`
+      ).join(', ');
+      
+      const flatJobValues = jobInserts.flat();
+      
+      jobsResult = await client.query(
+        `INSERT INTO jobs (project_id, slug, name, description, role, workflow_slug, inputs, outputs, requires_approval, auto_start, priority) 
+         VALUES ${jobValues} RETURNING *`,
+        flatJobValues
       );
     }
     
@@ -156,16 +242,17 @@ app.post('/api/projects', async (req: Request<{}, CreateProjectResponse | ApiErr
     
     res.status(201).json({
       project,
+      squads: squadsResult.rows,
       roles: rolesResult.rows,
+      workflows: workflowsResult.rows,
+      jobs: jobsResult.rows,
       template: {
         id: template.id,
         name: template.name,
         description: template.description
       },
-      workflows: template.workflows,
-      jobs: template.jobs,
-      sequences: template.sequences,
-      message: `Project "${name}" created successfully using "${template.name}" template with ${rolesResult.rows.length} roles, ${Object.keys(template.workflows).length} workflows, and ${template.jobs.length} jobs`
+      // Dependencies built from job input/output chains,
+      message: `Project "${name}" created successfully using "${template.name}" template with ${squadsResult.rows.length} squads, ${rolesResult.rows.length} roles, ${workflowsResult.rows.length} workflows, and ${jobsResult.rows.length} jobs`
     });
     
   } catch (err: any) {
@@ -208,25 +295,29 @@ app.get('/api/projects/:id', async (req: Request, res: Response<GetProjectRespon
       return res.status(404).json({ error: 'Project not found' });
     }
     
+    const squadsResult = await pool.query(
+      'SELECT * FROM squads WHERE project_id = $1 ORDER BY slug', [id]
+    );
+
     const rolesResult = await pool.query(
       'SELECT * FROM roles WHERE project_id = $1 ORDER BY short_name', [id]
     );
-    
-    // For existing projects, we'll return the full VCorp template for now
-    // In the future, you might store template info in the database
-    const template = PROJECT_TEMPLATES.vcorp_standard;
+
+    const workflowsResult = await pool.query(
+      'SELECT * FROM workflows WHERE project_id = $1 ORDER BY slug', [id]
+    );
+
+    const jobsResult = await pool.query(
+      'SELECT * FROM jobs WHERE project_id = $1 ORDER BY priority, slug', [id]
+    );
     
     res.json({
       project: projectResult.rows[0],
+      squads: squadsResult.rows,
       roles: rolesResult.rows,
-      template: {
-        id: template.id,
-        name: template.name,
-        description: template.description
-      },
-      workflows: template.workflows,
-      jobs: template.jobs,
-      sequences: template.sequences
+      workflows: workflowsResult.rows,
+      jobs: jobsResult.rows,
+      // Dependencies built from job input/output chains
     });
   } catch (err) {
     console.error('Get project error:', err);

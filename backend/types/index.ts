@@ -1,14 +1,30 @@
 // VCorpState TypeScript Definitions
 
+export interface Squad {
+  slug: string;
+  name: string;
+  description: string;
+  color: string;
+}
+
+export interface DatabaseSquad extends Squad {
+  id: number;
+  project_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Role {
   short_name: string;
   long_name: string;
   description_for_agent: string;
+  squad_slug: string;
 }
 
 export interface DatabaseRole extends Role {
   id: number;
   project_id: number;
+  squad_slug: string;
   created_at: string;
   updated_at: string;
 }
@@ -35,7 +51,7 @@ export interface WorkflowState {
 }
 
 export interface Workflow {
-  id: string;
+  slug: string;
   name: string;
   description: string;
   initial_state: string;
@@ -61,11 +77,11 @@ export interface JobOutput {
 }
 
 export interface Job {
-  id: string;
+  slug: string;
   name: string;
   description: string;
   role: string | string[];
-  workflow_id: string;
+  workflow_slug: string;
   inputs: JobInput[];
   outputs: JobOutput[];
   requires_approval: boolean;
@@ -78,10 +94,10 @@ export interface ProjectTemplate {
   name: string;
   description: string;
   icon: string;
+  squads: Squad[];
   roles: Role[];
   workflows: Record<string, Workflow>;
-  jobs: Job[];
-  sequences: Record<string, (string | string[])[]>;
+  jobs: string[]; // Array of job slugs to include
   features?: string[];
 }
 
@@ -91,6 +107,7 @@ export interface ProjectTemplateMetadata {
   description: string;
   icon: string;
   features?: string[];
+  squadCount: number;
   roleCount: number;
   workflowCount: number;
   jobCount: number;
@@ -106,29 +123,24 @@ export interface CreateProjectRequest {
 
 export interface CreateProjectResponse {
   project: Project;
+  squads: DatabaseSquad[];
   roles: DatabaseRole[];
   template: {
     id: string;
     name: string;
     description: string;
   };
-  workflows: Record<string, Workflow>;
-  jobs: Job[];
-  sequences: Record<string, (string | string[])[]>;
+  workflows: any[];
+  jobs: any[];
   message: string;
 }
 
 export interface GetProjectResponse {
   project: Project;
+  squads: DatabaseSquad[];
   roles: DatabaseRole[];
-  template: {
-    id: string;
-    name: string;
-    description: string;
-  };
-  workflows: Record<string, Workflow>;
-  jobs: Job[];
-  sequences: Record<string, (string | string[])[]>;
+  workflows: any[];
+  jobs: any[];
 }
 
 export interface ApiError {
@@ -148,14 +160,13 @@ export interface HelloResponse {
 }
 
 export interface TemplatesResponse {
+  squads: Squad[];
   roles: Role[];
   workflows: Record<string, Workflow>;
   jobs: Job[];
-  sequences: Record<string, (string | string[])[]>;
   projects: Record<string, ProjectTemplate>;
 }
 
 export interface JobTemplatesResponse {
   jobs: Job[];
-  sequences: Record<string, (string | string[])[]>;
 }

@@ -1,0 +1,1 @@
+["^ ","~$project-title-header",["^ ","~:row",3,"~:col",1,"~:fixed-arities",["~#set",[1]],"~:name","^0","~:ns","~$vcorpstate.components.header","~:top-ns","^7","~:arities",["^ ","~i1",["^ ","~:ret","~:vector","~:arglist-str","[project]"]],"~:type","~:fn"],"~:filename","/Users/davidcerezo/Projects/vcorpstate/frontend/src/vcorpstate/components/header.cljs"]

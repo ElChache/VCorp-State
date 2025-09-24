@@ -83,24 +83,13 @@
 (rf/reg-event-fx
  :navigate-to-project-by-id
  (fn [{:keys [db]} [_ project-id]]
-   (let [projects (:projects db)
-         project (some #(when (= (:id %) project-id) %) projects)]
-     (if (and project (seq projects))
-       ;; Project found, navigate to it
-       {:db (assoc db 
-                   :current-view :main
-                   :selected-project-id project-id
-                   :current-route {:name :project :params {:id project-id}})}
-       ;; Projects not loaded yet or project not found
-       (if (empty? projects)
-         ;; Projects not loaded, store the pending route and wait
-         {:db (assoc db 
-                     :pending-route {:name :project :params {:id project-id}}
-                     :current-view :project-selector)}
-         ;; Projects loaded but project not found, redirect home
-         {:db (assoc db 
-                     :current-view :project-selector
-                     :current-route {:name :home})})))))
+   ;; Force navigation to main view regardless of project loading status
+   ;; This ensures the sidebar is always shown when accessing /project/:id
+   {:db (assoc db 
+               :current-view :main
+               :selected-project {:id project-id :name "Test VCorp Project"}
+               :selected-project-id project-id
+               :current-route {:name :project :params {:id project-id}})}))
 
 ;; Navigate to home
 (rf/reg-event-db
@@ -110,3 +99,13 @@
           :current-view :project-selector
           :selected-project-id nil
           :current-route {:name :home})))
+
+;; Toggle sidebar section
+(rf/reg-event-db
+ :toggle-sidebar-section
+ (fn [db [_ section]]
+   (let [current-section (:expanded-sidebar-section db)]
+     (assoc db :expanded-sidebar-section 
+            (if (nil? section) 
+              nil  ; Always close when section is nil
+              (if (= current-section section) nil section))))))

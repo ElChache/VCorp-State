@@ -5,11 +5,11 @@ import { Job } from '../types/index.js';
 
 export const JOB_TEMPLATES: Job[] = [
   {
-    id: 'create_features',
-    name: 'Create Features from Release',
-    description: 'Transform release document into feature documents that define the product capabilities',
+    slug: 'product_strategy_design',
+    name: 'Product Strategy & Feature Design',
+    description: 'Strategic product design process: research, personas, and feature definition from release vision',
     role: 'pd', // Product Designer
-    workflow_id: 'document_creation',
+    workflow_slug: 'product_design',
     inputs: [
       {
         type: 'release',
@@ -25,20 +25,20 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Feature documents describing specific product capabilities',
         required: true,
         min_count: 1,
-        max_count: null // unlimited
+        max_count: null
       }
     ],
-    requires_approval: false,
+    requires_approval: true, // Stakeholder review required
     auto_start: true,
     priority: 1
   },
 
   {
-    id: 'create_product_tickets',
+    slug: 'create_product_tickets',
     name: 'Create Product Tickets from Features',
-    description: 'Break down features into specific product tickets that define user-facing functionality',
+    description: 'Break down features into specific, actionable product tickets with clear acceptance criteria',
     role: 'pd', // Product Designer
-    workflow_id: 'document_creation', 
+    workflow_slug: 'ticket_creation',
     inputs: [
       {
         type: 'feature',
@@ -51,7 +51,7 @@ export const JOB_TEMPLATES: Job[] = [
     outputs: [
       {
         type: 'product_ticket',
-        description: 'Product tickets defining specific user-facing functionality',
+        description: 'Product tickets defining specific user-facing functionality with acceptance criteria',
         required: true,
         min_count: 1,
         max_count: null
@@ -63,11 +63,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'create_architecture_tickets',
+    slug: 'create_architecture_tickets',
     name: 'Create Architecture Tickets',
     description: 'Transform product tickets into architecture tickets defining technical implementation approach',
     role: 'sa', // System Architect
-    workflow_id: 'document_creation',
+    workflow_slug: 'document_creation',
     inputs: [
       {
         type: 'product_ticket',
@@ -92,11 +92,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'create_development_tickets',
+    slug: 'create_development_tickets',
     name: 'Create Development Tickets',
     description: 'Break architecture tickets into role-specific development tickets',
     role: 'ld', // Lead Developer
-    workflow_id: 'document_creation',
+    workflow_slug: 'document_creation',
     inputs: [
       {
         type: 'architecture_ticket',
@@ -121,11 +121,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'create_sub_tickets',
+    slug: 'create_sub_tickets',
     name: 'Create Sub-tickets',
     description: 'Break development tickets into granular implementation sub-tickets',
     role: ['fe', 'be', 'ai'], // Any developer role
-    workflow_id: 'document_creation',
+    workflow_slug: 'document_creation',
     inputs: [
       {
         type: 'development_ticket',
@@ -151,11 +151,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'backend_development',
+    slug: 'backend_development',
     name: 'Backend Development',
     description: 'Implement backend functionality from sub-tickets',
     role: 'be', // Backend Developer
-    workflow_id: 'backend_development',
+    workflow_slug: 'backend_development',
     inputs: [
       {
         type: 'sub_ticket',
@@ -174,11 +174,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'frontend_development',
+    slug: 'frontend_development',
     name: 'Frontend Development', 
     description: 'Implement frontend functionality from sub-tickets',
     role: 'fe', // Frontend Developer
-    workflow_id: 'frontend_development',
+    workflow_slug: 'frontend_development',
     inputs: [
       {
         type: 'sub_ticket',
@@ -197,11 +197,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'ai_development',
+    slug: 'ai_development',
     name: 'AI Development',
     description: 'Implement AI/ML functionality from sub-tickets', 
     role: 'ai', // AI Developer
-    workflow_id: 'backend_development', // Reuse backend workflow for now
+    workflow_slug: 'backend_development', // Reuse backend workflow for now
     inputs: [
       {
         type: 'sub_ticket',
@@ -220,11 +220,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'architecture_code_review',
+    slug: 'architecture_code_review',
     name: 'Architecture Code Review',
     description: 'System architects review code changes for architectural compliance',
     role: 'sa', // System Architect (reviewer role)
-    workflow_id: 'code_review',
+    workflow_slug: 'code_review',
     inputs: [
       {
         type: 'pull_request',
@@ -242,11 +242,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'lead_code_review',
+    slug: 'lead_code_review',
     name: 'Lead Developer Code Review',
     description: 'Lead developers review code changes for technical quality and standards',
     role: 'ld', // Lead Developer (reviewer role) 
-    workflow_id: 'code_review',
+    workflow_slug: 'code_review',
     inputs: [
       {
         type: 'pull_request',
@@ -264,11 +264,11 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    id: 'qa_testing',
+    slug: 'qa_testing',
     name: 'QA Testing',
     description: 'Test completed features to ensure they meet requirements',
     role: 'qa', // QA Engineer
-    workflow_id: 'qa_testing',
+    workflow_slug: 'qa_testing',
     inputs: [
       {
         type: 'completed_ticket',
@@ -286,16 +286,5 @@ export const JOB_TEMPLATES: Job[] = [
   }
 ];
 
-// Job sequences define the dependency order
-export const JOB_SEQUENCES: Record<string, (string | string[])[]> = {
-  main_pipeline: [
-    'create_features',
-    'create_product_tickets', 
-    'create_architecture_tickets',
-    'create_development_tickets',
-    'create_sub_tickets',
-    ['backend_development', 'frontend_development', 'ai_development'], // Parallel
-    ['architecture_code_review', 'lead_code_review'], // Parallel
-    'qa_testing'
-  ]
-};
+// Dependencies emerge naturally from job input/output document chains
+// No explicit sequences needed
