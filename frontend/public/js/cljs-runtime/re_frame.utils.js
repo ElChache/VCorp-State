@@ -6,13 +6,13 @@ goog.provide('re_frame.utils');
  *   The key thing is that 'm' remains identical? to itself if the path was never present
  */
 re_frame.utils.dissoc_in = (function re_frame$utils$dissoc_in(m,p__21960){
-var vec__21964 = p__21960;
-var seq__21965 = cljs.core.seq(vec__21964);
-var first__21966 = cljs.core.first(seq__21965);
-var seq__21965__$1 = cljs.core.next(seq__21965);
-var k = first__21966;
-var ks = seq__21965__$1;
-var keys = vec__21964;
+var vec__21961 = p__21960;
+var seq__21962 = cljs.core.seq(vec__21961);
+var first__21963 = cljs.core.first(seq__21962);
+var seq__21962__$1 = cljs.core.next(seq__21962);
+var k = first__21963;
+var ks = seq__21962__$1;
+var keys = vec__21961;
 if(ks){
 var temp__5802__auto__ = cljs.core.get.cljs$core$IFn$_invoke$arity$2(m,k);
 if(cljs.core.truth_(temp__5802__auto__)){
@@ -43,14 +43,14 @@ return re_frame.loggers.console.cljs$core$IFn$_invoke$arity$variadic(new cljs.co
  */
 re_frame.utils.apply_kw = (function re_frame$utils$apply_kw(var_args){
 var args__5732__auto__ = [];
-var len__5726__auto___21984 = arguments.length;
-var i__5727__auto___21985 = (0);
+var len__5726__auto___21969 = arguments.length;
+var i__5727__auto___21970 = (0);
 while(true){
-if((i__5727__auto___21985 < len__5726__auto___21984)){
-args__5732__auto__.push((arguments[i__5727__auto___21985]));
+if((i__5727__auto___21970 < len__5726__auto___21969)){
+args__5732__auto__.push((arguments[i__5727__auto___21970]));
 
-var G__21986 = (i__5727__auto___21985 + (1));
-i__5727__auto___21985 = G__21986;
+var G__21971 = (i__5727__auto___21970 + (1));
+i__5727__auto___21970 = G__21971;
 continue;
 } else {
 }

@@ -11,13 +11,13 @@ return cljs.core.List.EMPTY;
 re_frame.loggers.console = (function re_frame$loggers$console(var_args){
 var args__5732__auto__ = [];
 var len__5726__auto___21955 = arguments.length;
-var i__5727__auto___21957 = (0);
+var i__5727__auto___21956 = (0);
 while(true){
-if((i__5727__auto___21957 < len__5726__auto___21955)){
-args__5732__auto__.push((arguments[i__5727__auto___21957]));
+if((i__5727__auto___21956 < len__5726__auto___21955)){
+args__5732__auto__.push((arguments[i__5727__auto___21956]));
 
-var G__21958 = (i__5727__auto___21957 + (1));
-i__5727__auto___21957 = G__21958;
+var G__21957 = (i__5727__auto___21956 + (1));
+i__5727__auto___21956 = G__21957;
 continue;
 } else {
 }

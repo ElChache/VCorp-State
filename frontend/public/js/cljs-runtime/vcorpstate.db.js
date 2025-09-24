@@ -1,0 +1,4 @@
+goog.provide('vcorpstate.db');
+vcorpstate.db.default_db = new cljs.core.PersistentArrayMap(null, 7, [new cljs.core.Keyword(null,"selected-project-id","selected-project-id",-358296808),null,new cljs.core.Keyword(null,"projects","projects",-364845983),cljs.core.PersistentVector.EMPTY,new cljs.core.Keyword(null,"current-view","current-view",-1037279042),new cljs.core.Keyword(null,"project-selector","project-selector",2050158805),new cljs.core.Keyword(null,"current-route","current-route",2067529448),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"name","name",1843675177),new cljs.core.Keyword(null,"home","home",-74557309)], null),new cljs.core.Keyword(null,"pending-route","pending-route",-107452698),null,new cljs.core.Keyword(null,"loading?","loading?",1905707049),false,new cljs.core.Keyword(null,"error","error",-978969032),null], null);
+
+//# sourceMappingURL=vcorpstate.db.js.map
