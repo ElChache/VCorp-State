@@ -23,6 +23,11 @@
    (get-in db [:data :jobs])))
 
 (rf/reg-sub
+ :data/jobs-by-slug
+ (fn [db _]
+   (get-in db [:data :jobs-by-slug])))
+
+(rf/reg-sub
  :data/squads
  (fn [db _]
    (get-in db [:data :squads])))
