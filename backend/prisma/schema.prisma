@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique @db.VarChar(255)
+  description   String?  @db.Text
+  path          String   @db.VarChar(500)
+  github_origin String?  @db.VarChar(500)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  // Relations
+  squads              Squad[]
+  roles               Role[]
+  workflows           Workflow[]
+  jobs                Job[]
+  document_collections DocumentCollection[]
+  documents           Document[]
+
+  @@map("projects")
+}
+
+model Squad {
+  id          Int      @id @default(autoincrement())
+  project_id  Int
+  slug        String   @db.VarChar(50)
+  name        String   @db.VarChar(255)
+  description String   @db.Text
+  color       String   @db.VarChar(7) // hex color codes like #3b82f6
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  // Relations
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  roles   Role[]
+
+  @@unique([project_id, slug])
+  @@map("squads")
+}
+
+model Role {
+  id                   Int      @id @default(autoincrement())
+  project_id           Int
+  short_name           String   @db.VarChar(50)
+  long_name            String   @db.VarChar(255)
+  squad_slug           String   @db.VarChar(50)
+  description_for_agent String   @db.Text
+  created_at           DateTime @default(now())
+  updated_at           DateTime @default(now()) @updatedAt
+
+  // Relations
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  squad   Squad   @relation(fields: [project_id, squad_slug], references: [project_id, slug])
+
+  @@unique([project_id, short_name])
+  @@map("roles")
+}
+
+model Workflow {
+  id            Int      @id @default(autoincrement())
+  project_id    Int
+  slug          String   @db.VarChar(100)
+  name          String   @db.VarChar(255)
+  description   String   @db.Text
+  initial_state String   @db.VarChar(100)
+  states        Json     @db.JsonB
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  // Relations
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  jobs    Job[]
+
+  @@unique([project_id, slug])
+  @@map("workflows")
+}
+
+model Job {
+  id                 Int       @id @default(autoincrement())
+  project_id         Int
+  slug               String    @db.VarChar(100)
+  name               String    @db.VarChar(255)
+  description        String    @db.Text
+  role               String    @db.VarChar(50)
+  workflow_slug      String    @db.VarChar(100)
+  inputs             Json      @default("[]") @db.JsonB
+  outputs            Json      @default("[]") @db.JsonB
+  automated          Boolean   @default(true)
+  completed          Boolean   @default(false)
+  completed_at       DateTime?
+  last_processed_at  DateTime?
+  paused             Boolean   @default(false)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @default(now()) @updatedAt
+
+  // Relations
+  project  Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  workflow Workflow @relation(fields: [project_id, workflow_slug], references: [project_id, slug])
+
+  snapshots JobDocumentSnapshot[]
+
+  @@unique([project_id, slug])
+  @@map("jobs")
+}
+
+model DocumentCollection {
+  id            Int      @id @default(autoincrement())
+  project_id    Int
+  slug          String   @db.VarChar(100)
+  name          String   @db.VarChar(255)
+  description   String?  @db.Text
+  document_type String   @db.VarChar(100)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  // Relations
+  project   Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@unique([project_id, slug])
+  @@map("document_collections")
+}
+
+model Document {
+  id                     Int       @id @default(autoincrement())
+  project_id             Int
+  document_collection_id Int?
+  slug                   String    @db.VarChar(100)
+  name                   String    @db.VarChar(255)
+  content                String    @db.Text
+  file_path              String    @db.VarChar(1000)
+  document_type          String    @db.VarChar(100)
+  parent_document_id     Int?
+  blocked_by             Json      @default("[]") @db.JsonB
+  status                 String  @default("ready") @db.VarChar(50)
+  assigned_to_role       String?   @db.VarChar(50)
+  picked_by_agent_id     String?   @db.VarChar(255)
+  metadata               Json      @default("{}") @db.JsonB
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @default(now()) @updatedAt
+  last_updated_at        DateTime  @default(now())
+
+  // Relations
+  project              Project              @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  document_collection  DocumentCollection?  @relation(fields: [document_collection_id], references: [id])
+  parent_document      Document?            @relation("DocumentHierarchy", fields: [parent_document_id], references: [id])
+  child_documents      Document[]           @relation("DocumentHierarchy")
+
+  snapshots JobDocumentSnapshot[]
+
+  @@unique([project_id, slug])
+  @@map("documents")
+}
+
+model JobDocumentSnapshot {
+  id                        Int      @id @default(autoincrement())
+  job_id                    Int
+  document_id               Int
+  document_slug             String   @db.VarChar(100)
+  content_snapshot          String   @db.Text
+  document_last_updated_at  DateTime
+  processed_at              DateTime @default(now())
+  processing_agent_id       String?  @db.VarChar(255)
+  created_at                DateTime @default(now())
+  updated_at                DateTime @default(now()) @updatedAt
+
+  // Relations
+  job      Job      @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+
+  @@map("job_document_snapshots")
+}
+

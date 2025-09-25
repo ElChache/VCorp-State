@@ -219,3 +219,114 @@ export interface TemplatesResponse {
 export interface JobTemplatesResponse {
   jobs: Job[];
 }
+
+// Graph Visualization Types
+export interface GraphPosition {
+  x: number;
+  y: number;
+}
+
+export interface GraphNode {
+  id: string;
+  type: 'collection' | 'job';
+  position: GraphPosition;
+}
+
+export interface CollectionNode extends GraphNode {
+  type: 'collection';
+  data: {
+    slug: string;
+    name: string;
+    status: 'blocked' | 'ready' | 'in_progress' | 'done';
+    progress: {
+      completed: number;
+      total: number;
+    };
+    documents: DocumentSummary[];
+    file_path?: string;
+  };
+}
+
+export interface JobNode extends GraphNode {
+  type: 'job';
+  data: {
+    slug: string;
+    name: string;
+    role: string;
+    squad: string;
+    status: 'waiting' | 'running' | 'completed' | 'paused';
+    agent?: AgentInfo;
+    automated: boolean;
+    duration?: string;
+  };
+}
+
+export interface DocumentSummary {
+  id: number;
+  slug: string;
+  name: string;
+  status: 'blocked' | 'ready' | 'in_progress' | 'done';
+  assigned_to_role?: string;
+  picked_by_agent_id?: string;
+}
+
+export interface AgentInfo {
+  id: string;
+  current_state?: string;
+  status?: string;
+  last_activity?: string;
+}
+
+export interface GraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: 'dependency' | 'transformation';
+  data?: {
+    label?: string;
+    description?: string;
+  };
+}
+
+export interface SquadColumn {
+  squad_slug: string;
+  squad_name: string;
+  color: string;
+  x_position: number;
+  width: number;
+}
+
+export interface GraphLayout {
+  squads: SquadColumn[];
+  width: number;
+  height: number;
+}
+
+export interface GraphData {
+  nodes: Array<CollectionNode | JobNode>;
+  edges: GraphEdge[];
+  layout: GraphLayout;
+}
+
+export interface CollectionDetails {
+  collection: DatabaseDocumentCollection;
+  documents: DatabaseDocument[];
+  progress: {
+    completed: number;
+    total: number;
+    blocked: number;
+    in_progress: number;
+  };
+  file_paths: string[];
+  last_updated: string;
+}
+
+export interface JobDetails {
+  job: Job & { id: number; project_id: number };
+  agent?: AgentInfo;
+  input_collections: DatabaseDocumentCollection[];
+  output_collections: DatabaseDocumentCollection[];
+  execution_log: string[];
+  duration: string;
+  snapshots: JobDocumentSnapshot[];
+}

@@ -5,14 +5,14 @@ goog.provide('re_frame.utils');
  *   will not be present in the new structure.
  *   The key thing is that 'm' remains identical? to itself if the path was never present
  */
-re_frame.utils.dissoc_in = (function re_frame$utils$dissoc_in(m,p__21960){
-var vec__21961 = p__21960;
-var seq__21962 = cljs.core.seq(vec__21961);
-var first__21963 = cljs.core.first(seq__21962);
-var seq__21962__$1 = cljs.core.next(seq__21962);
-var k = first__21963;
-var ks = seq__21962__$1;
-var keys = vec__21961;
+re_frame.utils.dissoc_in = (function re_frame$utils$dissoc_in(m,p__8377){
+var vec__8378 = p__8377;
+var seq__8379 = cljs.core.seq(vec__8378);
+var first__8380 = cljs.core.first(seq__8379);
+var seq__8379__$1 = cljs.core.next(seq__8379);
+var k = first__8380;
+var ks = seq__8379__$1;
+var keys = vec__8378;
 if(ks){
 var temp__5802__auto__ = cljs.core.get.cljs$core$IFn$_invoke$arity$2(m,k);
 if(cljs.core.truth_(temp__5802__auto__)){
@@ -43,14 +43,14 @@ return re_frame.loggers.console.cljs$core$IFn$_invoke$arity$variadic(new cljs.co
  */
 re_frame.utils.apply_kw = (function re_frame$utils$apply_kw(var_args){
 var args__5732__auto__ = [];
-var len__5726__auto___21969 = arguments.length;
-var i__5727__auto___21970 = (0);
+var len__5726__auto___8391 = arguments.length;
+var i__5727__auto___8394 = (0);
 while(true){
-if((i__5727__auto___21970 < len__5726__auto___21969)){
-args__5732__auto__.push((arguments[i__5727__auto___21970]));
+if((i__5727__auto___8394 < len__5726__auto___8391)){
+args__5732__auto__.push((arguments[i__5727__auto___8394]));
 
-var G__21971 = (i__5727__auto___21970 + (1));
-i__5727__auto___21970 = G__21971;
+var G__8395 = (i__5727__auto___8394 + (1));
+i__5727__auto___8394 = G__8395;
 continue;
 } else {
 }
@@ -73,11 +73,11 @@ return cljs.core.apply.cljs$core$IFn$_invoke$arity$2(f,cljs.core.apply.cljs$core
 (re_frame.utils.apply_kw.cljs$lang$maxFixedArity = (1));
 
 /** @this {Function} */
-(re_frame.utils.apply_kw.cljs$lang$applyTo = (function (seq21967){
-var G__21968 = cljs.core.first(seq21967);
-var seq21967__$1 = cljs.core.next(seq21967);
+(re_frame.utils.apply_kw.cljs$lang$applyTo = (function (seq8387){
+var G__8388 = cljs.core.first(seq8387);
+var seq8387__$1 = cljs.core.next(seq8387);
 var self__5711__auto__ = this;
-return self__5711__auto__.cljs$core$IFn$_invoke$arity$variadic(G__21968,seq21967__$1);
+return self__5711__auto__.cljs$core$IFn$_invoke$arity$variadic(G__8388,seq8387__$1);
 }));
 
 

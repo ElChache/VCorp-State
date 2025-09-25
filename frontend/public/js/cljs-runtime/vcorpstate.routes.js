@@ -1,7 +1,7 @@
 goog.provide('vcorpstate.routes');
 vcorpstate.routes.parse_url = (function vcorpstate$routes$parse_url(var_args){
-var G__12456 = arguments.length;
-switch (G__12456) {
+var G__11380 = arguments.length;
+switch (G__11380) {
 case 0:
 return vcorpstate.routes.parse_url.cljs$core$IFn$_invoke$arity$0();
 
@@ -54,27 +54,44 @@ return new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"na
 vcorpstate.routes.handle_route_change = (function vcorpstate$routes$handle_route_change(){
 
 var route = vcorpstate.routes.parse_url.cljs$core$IFn$_invoke$arity$0();
-var G__12457 = new cljs.core.Keyword(null,"name","name",1843675177).cljs$core$IFn$_invoke$arity$1(route);
-var G__12457__$1 = (((G__12457 instanceof cljs.core.Keyword))?G__12457.fqn:null);
-switch (G__12457__$1) {
+console.log("Route changed to:",route);
+
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"set-route","set-route",-1886203891),route], null));
+
+var G__11381 = new cljs.core.Keyword(null,"name","name",1843675177).cljs$core$IFn$_invoke$arity$1(route);
+var G__11381__$1 = (((G__11381 instanceof cljs.core.Keyword))?G__11381.fqn:null);
+switch (G__11381__$1) {
 case "home":
-return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"navigate-to-home","navigate-to-home",519585018)], null));
+console.log("Loading home view, dispatching :fetch-projects");
+
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"set-current-view","set-current-view",1459791368),new cljs.core.Keyword(null,"project-selector","project-selector",2050158805)], null));
+
+return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"fetch-projects","fetch-projects",1303051401)], null));
 
 break;
 case "project":
-return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"navigate-to-project-by-id","navigate-to-project-by-id",414954927),cljs.core.get_in.cljs$core$IFn$_invoke$arity$2(route,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"params","params",710516235),new cljs.core.Keyword(null,"id","id",-1388402092)], null))], null));
+var project_id = cljs.core.get_in.cljs$core$IFn$_invoke$arity$2(route,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"params","params",710516235),new cljs.core.Keyword(null,"id","id",-1388402092)], null));
+console.log("Loading project view for ID:",project_id);
+
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"set-current-view","set-current-view",1459791368),new cljs.core.Keyword(null,"main","main",-2117802661)], null));
+
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"set-selected-project","set-selected-project",639995206),project_id], null));
+
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","load-initial-data","graph/load-initial-data",470096851),project_id], null));
+
+return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("websocket","connect","websocket/connect",1397358632),project_id], null));
 
 break;
 default:
-throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__12457__$1)].join('')));
+throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__11381__$1)].join('')));
 
 }
 });
 vcorpstate.routes.navigate_to_route_BANG_ = (function vcorpstate$routes$navigate_to_route_BANG_(route){
 
-var hash = (function (){var G__12458 = new cljs.core.Keyword(null,"name","name",1843675177).cljs$core$IFn$_invoke$arity$1(route);
-var G__12458__$1 = (((G__12458 instanceof cljs.core.Keyword))?G__12458.fqn:null);
-switch (G__12458__$1) {
+var hash = (function (){var G__11382 = new cljs.core.Keyword(null,"name","name",1843675177).cljs$core$IFn$_invoke$arity$1(route);
+var G__11382__$1 = (((G__11382 instanceof cljs.core.Keyword))?G__11382.fqn:null);
+switch (G__11382__$1) {
 case "home":
 return "#/";
 
@@ -84,7 +101,7 @@ return ["#/project/",cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.get_i
 
 break;
 default:
-throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__12458__$1)].join('')));
+throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__11382__$1)].join('')));
 
 }
 })();

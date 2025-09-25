@@ -19,11 +19,24 @@
        :else {:name :home}))))
 
 (defn handle-route-change []
-  "Handle route changes and dispatch appropriate events"
+  "Handle route changes and load data based on route"
   (let [route (parse-url)]
+    (js/console.log "Route changed to:" route)
+    ;; Set the route in db first
+    (rf/dispatch [:set-route route])
+    
+    ;; Load data based on route
     (case (:name route)
-      :home (rf/dispatch [:navigate-to-home])
-      :project (rf/dispatch [:navigate-to-project-by-id (get-in route [:params :id])]))))
+      :home (do
+              (js/console.log "Loading home view, dispatching :fetch-projects")
+              (rf/dispatch [:set-current-view :project-selector])
+              (rf/dispatch [:fetch-projects]))
+      :project (let [project-id (get-in route [:params :id])]
+                 (js/console.log "Loading project view for ID:" project-id)
+                 (rf/dispatch [:set-current-view :main])
+                 (rf/dispatch [:set-selected-project project-id])
+                 (rf/dispatch [:graph/load-initial-data project-id])
+                 (rf/dispatch [:websocket/connect project-id])))))
 
 (defn navigate-to-route! [route]
   "Navigate to a route and update browser history"

@@ -22,8 +22,8 @@ return or__5002__auto__;
 var temp__5804__auto__ = new cljs.core.Keyword(null,"selected-project-id","selected-project-id",-358296808).cljs$core$IFn$_invoke$arity$1(db);
 if(cljs.core.truth_(temp__5804__auto__)){
 var project_id = temp__5804__auto__;
-return cljs.core.first(cljs.core.filter.cljs$core$IFn$_invoke$arity$2((function (p1__12538_SHARP_){
-return cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"id","id",-1388402092).cljs$core$IFn$_invoke$arity$1(p1__12538_SHARP_),project_id);
+return cljs.core.first(cljs.core.filter.cljs$core$IFn$_invoke$arity$2((function (p1__6716_SHARP_){
+return cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"id","id",-1388402092).cljs$core$IFn$_invoke$arity$1(p1__6716_SHARP_),project_id);
 }),new cljs.core.Keyword(null,"projects","projects",-364845983).cljs$core$IFn$_invoke$arity$1(db)));
 } else {
 return null;

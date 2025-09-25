@@ -14,6 +14,5 @@
 
 (defn ^:export init! []
   (rf/dispatch-sync [:initialize-db])
-  (rf/dispatch [:fetch-projects])
   (routes/init-routes!)
   (mount-root))

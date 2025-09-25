@@ -1,8 +1,8 @@
 # VCorpState
 
-VCorp State Management Platform - A document transformation pipeline using AI agents.
+VCorp State Management Platform - A document transformation pipeline with real-time graph visualization.
 
-## Quick Start
+## 🚀 Quick Start
 
 Run the entire stack with one command:
 
@@ -11,16 +11,18 @@ pnpm start
 ```
 
 This will:
-- Start PostgreSQL in Docker
-- Start the Node.js backend with Bun 
-- Start the Re-frame frontend with shadow-cljs and hot reload
+- Start PostgreSQL in Docker (port 5432)
+- Start the backend API server (port 3001) 
+- Start WebSocket server for real-time events (port 3003)
+- Start the ClojureScript frontend with hot reload (port 8000)
 
-Open http://localhost:3000 and select a project to test the connection.
+Open http://localhost:8000 to access the application.
 
 ## Prerequisites
 
 - [pnpm](https://pnpm.io/) - Package manager
 - [Docker](https://docker.com/) - For PostgreSQL database
+- [Bun](https://bun.sh/) - JavaScript runtime for backend
 - [Java 11+](https://openjdk.org/) - Required by shadow-cljs
 
 ## Configuration
@@ -42,39 +44,132 @@ NODE_ENV=development
 ## Commands
 
 - `pnpm start` - Start all services (development mode)
-- `pnpm dev` - Alias for start
-- `pnpm backend:dev` - Start only backend
-- `pnpm frontend:dev` - Start only frontend
-- `pnpm build` - Build frontend for production
-- `pnpm docker` - Start full containerized stack
-- `pnpm docker:prod` - Start containerized stack in background
+- `pnpm build` - Build for production
+- `pnpm prod` - Run production build
 - `pnpm stop` - Stop all services
 
-## Database Setup
+## 🗄️ Database Setup
 
-The database schema is automatically applied when the backend starts. Schema file: `backend/db/schema.sql`
+### Initial Setup
+The database schema is automatically applied when the backend starts. However, for **real-time features**, you need to set up PostgreSQL triggers:
 
-## Architecture
+```bash
+# After first run, set up real-time triggers
+cd backend
+bun db:triggers
+```
+
+### What this does:
+- Creates PostgreSQL triggers that fire on document/job status changes
+- Sets up NOTIFY events for instant real-time updates
+- Enables WebSocket broadcasting of database changes
+
+### Manual Setup (if needed)
+```bash
+# Initialize database schema
+cd backend  
+bun db:init
+
+# Set up real-time triggers
+bun db:triggers
+
+# Prisma commands
+npm run db:generate    # Generate Prisma client
+npm run db:migrate     # Run database migrations (if using Prisma migrate)
+```
+
+## 🏗️ Architecture
 
 - **Frontend**: Re-frame (ClojureScript) with Reagent, shadow-cljs build, Tailwind CSS
-- **Backend**: Node.js with Express (run with Bun), PostgreSQL with connection pooling
-- **Database**: PostgreSQL with automatic schema migration and environment-based configuration
+- **Backend**: Node.js with Express (run with Bun), TypeScript with Prisma ORM
+- **Database**: PostgreSQL with Prisma schema management and real-time triggers
+- **Real-time**: PostgreSQL NOTIFY + WebSocket broadcasting (zero polling)
 - **Container**: Multi-service Docker Compose with health checks
 
-## Project Structure
+### Real-Time System
+```
+Database Changes → PostgreSQL Triggers → NOTIFY Events → WebSocket → Frontend Updates
+```
+
+## 📡 REST API
+
+### Health & Status
+```bash
+GET /health                    # Service health check
+GET /api/hello                # Backend status with real-time stats  
+GET /api/realtime/stats       # WebSocket connection statistics
+```
+
+### Projects
+```bash
+GET  /api/project-templates              # Available project templates
+GET  /api/project-templates/:templateId # Specific template details
+POST /api/projects                       # Create new project
+```
+
+**Create Project Request:**
+```json
+{
+  "name": "My Project",
+  "description": "Project description", 
+  "path": "/path/to/project",
+  "githubOrigin": "https://github.com/user/repo",
+  "templateId": "vcorp_standard"
+}
+```
+
+### Project Data  
+```bash
+GET /api/projects/:id/initial-data    # Complete project data (single call)
+GET /api/collections/:id/details      # Collection with documents and progress
+GET /api/jobs/:id/details            # Job details with execution info
+```
+
+### Testing & Development
+```bash
+POST /api/test/emit-event              # Emit test real-time event
+POST /api/test/update-document-status  # Update document status (triggers real-time)
+```
+
+**Document Status Update:**
+```json
+{
+  "documentId": 123,
+  "status": "in_progress",  // blocked | ready | in_progress | done
+  "agentId": "agent-uuid-123"
+}
+```
+
+## 🗄️ Database
+
+**PostgreSQL** with **Prisma ORM** for type-safe operations:
+- Projects → Squads → Roles (team structure) 
+- Workflows → Jobs (document processing pipeline)
+- Document Collections → Documents (with status lifecycle)
+- Real-time triggers for instant WebSocket updates
+
+**📖 Detailed documentation: [docs/database.md](docs/database.md)**
+
+## 📁 Project Structure
 
 ```
 vcorpstate/
-├── backend/                 # Node.js API server
-│   ├── db/                 # Database schema and migrations
-│   ├── templates/          # Role templates
-│   └── server.js          # Main server file
-├── frontend/               # ClojureScript frontend
-│   ├── src/vcorpstate/    # Application source
-│   ├── public/            # Static assets
-│   └── shadow-cljs.edn    # Build configuration
-├── docs/                   # Architecture and design documents
-└── docker-compose.yml     # Container orchestration
+├── backend/                    # TypeScript backend with Prisma ORM
+│   ├── db/                    # SQL schema and trigger setup  
+│   ├── prisma/                # Prisma schema and migrations
+│   ├── generated/             # Auto-generated Prisma client
+│   ├── services/              # Database and real-time services
+│   ├── routes/                # API route handlers
+│   ├── templates/             # Project and job templates
+│   └── server.ts              # Main server file
+├── frontend/                   # ClojureScript frontend
+│   ├── src/vcorpstate/        # Re-frame application source
+│   ├── public/                # Static assets and compiled JS
+│   └── shadow-cljs.edn        # Build configuration
+├── docs/                       # Architecture and API documentation
+│   ├── database.md            # Database schema and Prisma details
+│   └── real-time-graph-*.md   # Real-time architecture docs
+└── docker-compose.yml         # PostgreSQL container setup
 ```
 
 ## Development
@@ -92,3 +187,40 @@ All ports are configurable via environment variables:
 - Shadow-cljs: `SHADOW_CLJS_PORT` (default: 9630)
 
 No hardcoded ports anywhere in the codebase.
+
+## 📚 Documentation
+
+- **[Database Schema & Prisma ORM](docs/database.md)** - Complete database documentation
+- **[Real-Time Architecture](docs/real-time-graph-architecture.md)** - WebSocket and trigger system details
+- **[Graph Reference](docs/graph-reference.md)** - Frontend graph visualization guide
+
+## 🔧 Development Tips
+
+**Backend Development:**
+```bash
+cd backend
+bun --watch server.ts     # Auto-restart on changes
+npm run db:generate       # Regenerate Prisma client after schema changes
+```
+
+**Testing REST APIs:**
+```bash
+# Health check
+curl http://localhost:3001/health
+
+# Create project
+curl -X POST http://localhost:3001/api/projects \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","path":"/tmp/test","templateId":"vcorp_standard"}'
+
+# Get project data  
+curl http://localhost:3001/api/projects/1/initial-data
+```
+
+**Real-time Testing:**
+```bash
+# Trigger document status change (fires real-time event)
+curl -X POST http://localhost:3001/api/test/update-document-status \
+  -H "Content-Type: application/json" \
+  -d '{"documentId":1,"status":"in_progress","agentId":"test-123"}'
+```

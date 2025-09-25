@@ -1,5 +1,6 @@
 (ns vcorpstate.subs
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [vcorpstate.subs.graph])) ; Load graph subscriptions
 
 (rf/reg-sub
  :projects

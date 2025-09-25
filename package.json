@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "VCorp State Management Platform",
   "scripts": {
-    "dev": "export $(cat .env | xargs) && docker-compose up -d postgres && concurrently \"pnpm backend:dev\" \"pnpm frontend:dev\"",
-    "backend:dev": "cd backend && export $(cat ../.env | xargs) && bun run dev",
+    "start": "export $(cat .env | xargs) && docker-compose up -d postgres && concurrently --names \"Backend,Frontend\" --prefix-colors \"blue,yellow\" \"pnpm backend:start\" \"pnpm frontend:dev\"",
+    "dev": "pnpm start",
+    "backend:start": "cd backend && export $(cat ../.env | xargs) && WS_PORT=3003 bun server.ts",
+    "backend:dev": "cd backend && export $(cat ../.env | xargs) && bun --watch server.ts",
     "frontend:dev": "cd frontend && export $(cat ../.env | xargs) && npx shadow-cljs watch app",
-    "build": "cd frontend && export $(cat ../.env | xargs) && npx shadow-cljs release app",
+    "build": "cd frontend && export $(cat ../.env | xargs) && npx shadow-cljs release app && cd ../backend && bun build server.ts --outdir dist --target node",
+    "prod": "export $(cat .env | xargs) && docker-compose up -d postgres && cd backend && WS_PORT=3003 node dist/server.js",
     "docker": "docker-compose --env-file .env up --build",
     "docker:prod": "docker-compose --env-file .env up --build -d",
-    "start": "pnpm dev",
     "stop": "docker-compose down"
   },
   "devDependencies": {
