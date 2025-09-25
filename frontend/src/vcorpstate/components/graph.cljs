@@ -12,9 +12,33 @@
       (map (fn [[job-slug _children]]
              (let [job (get jobs-by-slug job-slug)]
                ^{:key (str level "-" job-slug)}
-               [:div {:class "bg-orange-100 border border-orange-400 rounded px-3 py-2 text-sm"}
-                [:div {:class "font-medium text-orange-800"}
-                 (or (:name job) job-slug)]]))
+               [:div {:class "flex flex-col items-center"}
+                ;; Input documents (above job) - only for level 0 (root jobs)
+                (when (and (= level 0) (not-empty (:inputs job)))
+                  [:div {:class "flex justify-center mb-1"
+                         :style {:gap "0.5rem"}}
+                   (map (fn [input]
+                          ^{:key (str job-slug "-input-" (:slug input))}
+                          [:div {:class "bg-blue-100 border border-blue-300 rounded px-3 py-2 text-sm"}
+                           [:div {:class "font-medium text-blue-800"}
+                            (:slug input)]])
+                        (:inputs job))])
+                
+                ;; Job box
+                [:div {:class "bg-orange-100 border border-orange-400 rounded px-3 py-2 text-sm"}
+                 [:div {:class "font-medium text-orange-800"}
+                  (or (:name job) job-slug)]]
+                
+                ;; Output documents (below job)
+                (when (not-empty (:outputs job))
+                  [:div {:class "flex justify-center mt-1"
+                         :style {:gap "0.5rem"}}
+                   (map (fn [output]
+                          ^{:key (str job-slug "-output-" (:slug output))}
+                          [:div {:class "bg-green-100 border border-green-300 rounded px-3 py-2 text-sm"}
+                           [:div {:class "font-medium text-green-800"}
+                            (:slug output)]])
+                        (:outputs job))])]))
            jobs-map)]
      ;; Recursively render next level - collect all children from current level
      (let [all-children (apply merge (vals jobs-map))]
