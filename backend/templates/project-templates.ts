@@ -19,26 +19,32 @@ export const PROJECT_TEMPLATES: Record<string, ProjectTemplate> = {
     jobs: [
       'product_strategy_design',
       'create_product_tickets',
-      'create_architecture_tickets',
-      'create_development_tickets', 
-      'create_sub_tickets',
-      'backend_development',
-      'frontend_development',
-      'ai_development',
-      'architecture_code_review',
-      'lead_code_review',
-      'qa_testing'
+      'enhance_product_tickets',
+      'create_fe_tickets',
+      'create_be_tickets', 
+      'create_ai_tickets',
+      'create_fe_subtickets',
+      'create_be_subtickets',
+      'create_ai_subtickets',
+      'develop_fe_subtickets',
+      'develop_be_subtickets',
+      'develop_ai_subtickets',
+      'review_fe_subtickets',
+      'review_be_subtickets',
+      'review_ai_subtickets',
+      'qa_review_product_tickets'
     ],
     // Dependencies emerge from job input/output chains
     features: [
-      'Product Design workflow (PD)',
-      'System Architecture workflow (SA)', 
-      'Lead Development workflow (LD)',
-      'Frontend/Backend/AI development',
-      'Code review workflows',
-      'QA testing workflow',
-      'Complete document transformation pipeline',
-      'State machine agent control'
+      'Product Designer creates features and product tickets',
+      'System Architect enhances tickets with technical contracts', 
+      'Parallel FE/BE/AI lead ticket creation',
+      'Squad-based sub-ticket breakdown and development',
+      'Role-specific code review by leads',
+      'QA review of completed product tickets',
+      'Document collection organization',
+      'Automated job flow with manual intervention controls',
+      'Complete document transformation pipeline'
     ]
   }
 };

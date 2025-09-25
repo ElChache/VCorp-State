@@ -58,22 +58,53 @@ export interface Workflow {
   states: Record<string, WorkflowState>;
 }
 
+export interface DocumentCollection {
+  slug: string;
+  name: string;
+  description?: string;
+  document_type: string; // e.g., 'feature', 'product_ticket', 'enhanced_product_ticket'
+}
+
+export interface DatabaseDocumentCollection extends DocumentCollection {
+  id: number;
+  project_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Document {
+  slug: string;
+  name: string;
+  content: string;
+  file_path: string; // Path to the mirrored file in the filesystem
+  document_type: string; // e.g., 'release', 'feature', 'product_ticket'
+  parent_document_id?: number;
+  blocked_by: string[]; // Array of document slugs that block this document
+  status: 'blocked' | 'ready' | 'in_progress' | 'done';
+  assigned_to_role?: string; // Optional role assignment (e.g., "fe", "be", "ai")
+  picked_by_agent_id?: string; // ID of agent currently working on this document
+  metadata: Record<string, any>; // Type-specific information
+}
+
+export interface DatabaseDocument extends Document {
+  id: number;
+  project_id: number;
+  document_collection_id?: number;
+  created_at: string;
+  updated_at: string;
+  last_updated_at: string; // When document content was last modified
+}
+
 export interface JobInput {
-  type: string;
+  isCollection: boolean; // true = collection, false = individual document
+  slug: string; // Document slug or collection slug
   description: string;
-  required: boolean;
-  min_count: number;
-  max_count: number | null;
-  filter_by_role?: boolean;
-  status?: string;
 }
 
 export interface JobOutput {
-  type: string;
+  isCollection: boolean; // true = collection, false = individual document  
+  slug: string; // Document slug or collection slug
   description: string;
-  required: boolean;
-  min_count: number;
-  max_count: number | null;
 }
 
 export interface Job {
@@ -84,9 +115,27 @@ export interface Job {
   workflow_slug: string;
   inputs: JobInput[];
   outputs: JobOutput[];
-  requires_approval: boolean;
-  auto_start: boolean;
-  priority: number;
+  automated: boolean; // If true, job completes automatically when outputs are produced
+  completed: boolean;
+  completed_at?: string; // When the job was completed
+  last_processed_at?: string; // When the job last processed its input documents
+  paused: boolean; // If true, job execution is paused
+}
+
+export interface JobDocumentSnapshot {
+  job_id: number;
+  document_id: number;
+  document_slug: string;
+  content_snapshot: string; // Document content when processed
+  document_last_updated_at: string; // Document's last_updated_at when processed
+  processed_at: string;
+  processing_agent_id?: string; // Which agent processed this document
+}
+
+export interface DatabaseJobDocumentSnapshot extends JobDocumentSnapshot {
+  id: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ProjectTemplate {
