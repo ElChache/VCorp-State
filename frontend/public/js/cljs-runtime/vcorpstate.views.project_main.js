@@ -6,22 +6,22 @@ vcorpstate.views.project_main.project_main_view = (function vcorpstate$views$pro
 var selected_project = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"selected-project","selected-project",993223033)], null)));
 var selected_project_id = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"selected-project-id","selected-project-id",-358296808)], null)));
 var expanded_section = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"expanded-sidebar-section","expanded-sidebar-section",-903073682)], null)));
-var has_data_QMARK_ = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","has-data?","graph/has-data?",-1099325159)], null)));
+var has_data_QMARK_ = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","loaded?","data/loaded?",-1132268076)], null)));
 return reagent.core.create_class.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"component-did-mount","component-did-mount",-1126910518),(function (){
 if(cljs.core.truth_(selected_project_id)){
-re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","load-initial-data","graph/load-initial-data",470096851),selected_project_id], null));
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("project","load","project/load",2146921719),selected_project_id], null));
 
 return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("websocket","connect","websocket/connect",1397358632),selected_project_id], null));
 } else {
 return null;
 }
-}),new cljs.core.Keyword(null,"component-did-update","component-did-update",-1468549173),(function (this$,p__14810){
-var vec__14811 = p__14810;
-var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__14811,(0),null);
-var prev_props = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__14811,(1),null);
-var vec__14814 = prev_props;
-var ___$1 = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__14814,(0),null);
-var prev_project_id = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__14814,(1),null);
+}),new cljs.core.Keyword(null,"component-did-update","component-did-update",-1468549173),(function (this$,p__12463){
+var vec__12464 = p__12463;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12464,(0),null);
+var prev_props = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12464,(1),null);
+var vec__12467 = prev_props;
+var ___$1 = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12467,(0),null);
+var prev_project_id = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12467,(1),null);
 if(cljs.core.truth_((function (){var and__5000__auto__ = selected_project_id;
 if(cljs.core.truth_(and__5000__auto__)){
 return cljs.core.not_EQ_.cljs$core$IFn$_invoke$arity$2(selected_project_id,prev_project_id);
@@ -29,7 +29,7 @@ return cljs.core.not_EQ_.cljs$core$IFn$_invoke$arity$2(selected_project_id,prev_
 return and__5000__auto__;
 }
 })())){
-re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","load-initial-data","graph/load-initial-data",470096851),selected_project_id], null));
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("project","load","project/load",2146921719),selected_project_id], null));
 
 return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("websocket","connect","websocket/connect",1397358632),selected_project_id], null));
 } else {

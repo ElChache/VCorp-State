@@ -1,6 +1,6 @@
 (ns vcorpstate.subs
   (:require [re-frame.core :as rf]
-            [vcorpstate.subs.graph])) ; Load graph subscriptions
+            [vcorpstate.subs.data])) ; Load data subscriptions
 
 (rf/reg-sub
  :projects
@@ -21,6 +21,11 @@
  :error
  (fn [db _]
    (:error db)))
+
+(rf/reg-sub
+ :app/loading?
+ (fn [db _]
+   (get-in db [:app :loading?])))
 
 (rf/reg-sub
  :has-projects?

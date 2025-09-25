@@ -1,50 +1,50 @@
 goog.provide('vcorpstate.events.websocket');
-re_frame.core.reg_event_fx.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","connect","websocket/connect",1397358632),(function (p__11212,p__11213){
-var map__11214 = p__11212;
-var map__11214__$1 = cljs.core.__destructure_map(map__11214);
-var db = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__11214__$1,new cljs.core.Keyword(null,"db","db",993250759));
-var vec__11215 = p__11213;
-var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11215,(0),null);
-var project_id = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11215,(1),null);
+re_frame.core.reg_event_fx.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","connect","websocket/connect",1397358632),(function (p__12489,p__12490){
+var map__12491 = p__12489;
+var map__12491__$1 = cljs.core.__destructure_map(map__12491);
+var db = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__12491__$1,new cljs.core.Keyword(null,"db","db",993250759));
+var vec__12492 = p__12490;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12492,(0),null);
+var project_id = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12492,(1),null);
 var ws_connection = vcorpstate.websocket.create_websocket_connection(project_id);
 return new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"db","db",993250759),cljs.core.assoc_in(db,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"connection","connection",-123599300)], null),ws_connection)], null);
 }));
-re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","connected","websocket/connected",1045426566),(function (db,p__11218){
-var vec__11219 = p__11218;
-var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11219,(0),null);
-var ws = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11219,(1),null);
+re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","connected","websocket/connected",1045426566),(function (db,p__12495){
+var vec__12496 = p__12495;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12496,(0),null);
+var ws = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12496,(1),null);
 return cljs.core.assoc_in(cljs.core.assoc_in(cljs.core.assoc_in(cljs.core.assoc_in(db,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"connected?","connected?",-1197551387)], null),true),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"connection","connection",-123599300)], null),ws),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"reconnect-attempts","reconnect-attempts",-1994972943)], null),(0)),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"graph","graph",1558099509),new cljs.core.Keyword(null,"connected?","connected?",-1197551387)], null),true);
 }));
 re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","disconnected","websocket/disconnected",-1676204563),(function (db,_){
 return cljs.core.assoc_in(cljs.core.assoc_in(db,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"connected?","connected?",-1197551387)], null),false),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"graph","graph",1558099509),new cljs.core.Keyword(null,"connected?","connected?",-1197551387)], null),false);
 }));
-re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","error","websocket/error",-948632993),(function (db,p__11222){
-var vec__11229 = p__11222;
-var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11229,(0),null);
-var error = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11229,(1),null);
+re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","error","websocket/error",-948632993),(function (db,p__12499){
+var vec__12500 = p__12499;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12500,(0),null);
+var error = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12500,(1),null);
 return cljs.core.update_in.cljs$core$IFn$_invoke$arity$3(cljs.core.assoc_in(cljs.core.assoc_in(db,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"connected?","connected?",-1197551387)], null),false),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"graph","graph",1558099509),new cljs.core.Keyword(null,"connected?","connected?",-1197551387)], null),false),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"websocket","websocket",-1714963101),new cljs.core.Keyword(null,"reconnect-attempts","reconnect-attempts",-1994972943)], null),cljs.core.inc);
 }));
-re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","event-received","websocket/event-received",1127274852),(function (db,p__11241){
-var vec__11242 = p__11241;
-var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11242,(0),null);
-var event = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__11242,(1),null);
+re_frame.core.reg_event_db.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword("websocket","event-received","websocket/event-received",1127274852),(function (db,p__12503){
+var vec__12504 = p__12503;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12504,(0),null);
+var event = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12504,(1),null);
 var event_type = new cljs.core.Keyword(null,"type","type",1174270348).cljs$core$IFn$_invoke$arity$1(event);
-var G__11248_11260 = event_type;
-switch (G__11248_11260) {
+var G__12507_12508 = event_type;
+switch (G__12507_12508) {
 case "document_status_changed":
-re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","document-status-changed","graph/document-status-changed",-164205867),event], null));
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","document-status-changed","data/document-status-changed",-273122727),event], null));
 
 break;
 case "job_status_changed":
-re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","job-status-changed","graph/job-status-changed",-335897525),event], null));
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","job-status-changed","data/job-status-changed",-194475209),event], null));
 
 break;
 case "collection_progress_updated":
-re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","collection-progress-updated","graph/collection-progress-updated",-783101299),event], null));
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","collection-progress-updated","data/collection-progress-updated",-738056983),event], null));
 
 break;
 case "document_created":
-re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("graph","document-created","graph/document-created",-424135234),event], null));
+re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","document-created","data/document-created",-259390310),event], null));
 
 break;
 default:

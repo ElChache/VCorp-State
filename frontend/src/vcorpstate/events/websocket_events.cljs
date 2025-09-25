@@ -1,4 +1,4 @@
-(ns vcorpstate.events.websocket
+(ns vcorpstate.events.websocket-events
   "WebSocket-related events"
   (:require [re-frame.core :as rf]
             [vcorpstate.websocket :as ws]))
@@ -51,9 +51,11 @@
  (fn [db [_ event]]
    (let [event-type (:type event)]
      (case event-type
-       "document_status_changed" (rf/dispatch [:graph/document-status-changed event])
-       "job_status_changed" (rf/dispatch [:graph/job-status-changed event])
-       "collection_progress_updated" (rf/dispatch [:graph/collection-progress-updated event])
-       "document_created" (rf/dispatch [:graph/document-created event])
+       "document_status_changed" (rf/dispatch [:data/document-status-changed event])
+       "job_status_changed" (rf/dispatch [:data/job-status-changed event])
+       "collection_progress_updated" (rf/dispatch [:data/collection-progress-updated event])
+       "document_created" (rf/dispatch [:data/document-created event])
+       "connection_established" (js/console.log "WebSocket connection established")
+       "subscription_confirmed" (js/console.log "Project subscription confirmed")
        (js/console.log "Unknown WebSocket event type:" event-type))
      (assoc-in db [:websocket :last-event] event))))

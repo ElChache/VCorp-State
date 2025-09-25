@@ -11,14 +11,14 @@
   (let [selected-project @(rf/subscribe [:selected-project])
         selected-project-id @(rf/subscribe [:selected-project-id])
         expanded-section @(rf/subscribe [:expanded-sidebar-section])
-        has-data? @(rf/subscribe [:graph/has-data?])]
+        has-data? @(rf/subscribe [:data/loaded?])]
     
-    ;; Initialize graph data and WebSocket when component mounts
+    ;; Initialize project data and WebSocket when component mounts
     (r/create-class
      {:component-did-mount 
       (fn []
         (when selected-project-id
-          (rf/dispatch [:graph/load-initial-data selected-project-id])
+          (rf/dispatch [:project/load selected-project-id])
           (rf/dispatch [:websocket/connect selected-project-id])))
       
       :component-did-update
@@ -26,7 +26,7 @@
         (let [[_ prev-project-id] prev-props]
           (when (and selected-project-id 
                      (not= selected-project-id prev-project-id))
-            (rf/dispatch [:graph/load-initial-data selected-project-id])
+            (rf/dispatch [:project/load selected-project-id])
             (rf/dispatch [:websocket/connect selected-project-id]))))
       
       :reagent-render

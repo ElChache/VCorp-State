@@ -9,8 +9,8 @@
   "Load all initial data for a project in a single API call"
   [project-id]
   (ajax/GET (str api-base-url "/api/projects/" project-id "/initial-data")
-    {:handler #(rf/dispatch [:graph/initial-data-loaded %])
-     :error-handler #(rf/dispatch [:graph/initial-data-failed %])
+    {:handler #(rf/dispatch [:data/project-loaded %])
+     :error-handler #(rf/dispatch [:data/project-failed %])
      :format (ajax/json-request-format)
      :response-format (ajax/json-response-format {:keywords? true})}))
 

@@ -35,7 +35,7 @@
                  (js/console.log "Loading project view for ID:" project-id)
                  (rf/dispatch [:set-current-view :main])
                  (rf/dispatch [:set-selected-project project-id])
-                 (rf/dispatch [:graph/load-initial-data project-id])
+                 (rf/dispatch [:project/load project-id])
                  (rf/dispatch [:websocket/connect project-id])))))
 
 (defn navigate-to-route! [route]

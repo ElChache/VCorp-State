@@ -4,8 +4,9 @@
             [day8.re-frame.http-fx] ; Load HTTP effects
             [vcorpstate.db :as db]
             ;; Load modular event handlers
-            [vcorpstate.events.graph]
-            [vcorpstate.events.websocket]
+            [vcorpstate.events.data]
+            [vcorpstate.events.project]
+            [vcorpstate.events.websocket-events]
             [vcorpstate.events.navigation]
             [vcorpstate.events.ui]))
 
