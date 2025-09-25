@@ -32,7 +32,8 @@ export const PROJECT_TEMPLATES: Record<string, ProjectTemplate> = {
       'review_fe_subtickets',
       'review_be_subtickets',
       'review_ai_subtickets',
-      'qa_review_product_tickets'
+      'qa_review_product_tickets',
+      'qa_review_features'
     ],
     // Dependencies emerge from job input/output chains
     features: [

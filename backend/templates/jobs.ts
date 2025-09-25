@@ -12,14 +12,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'product_design',
     inputs: [
       {
-        isCollection: false,
         slug: 'release',
         description: 'Release document describing the overall product vision and requirements'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'features',
         description: 'Collection of feature documents describing specific product capabilities'
       }
@@ -37,14 +35,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'ticket_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'features',
         description: 'Feature collection to be broken down into product tickets'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'product_tickets',
         description: 'Collection of product tickets defining specific user-facing functionality'
       }
@@ -62,14 +58,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'product_tickets',
         description: 'Collection of product tickets to be enhanced with technical contracts'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'enhanced_product_tickets',
         description: 'Enhanced product tickets with technical contracts enabling parallel development'
       }
@@ -87,14 +81,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'enhanced_product_tickets',
         description: 'Enhanced product tickets with technical contracts'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'fe_tickets',
         description: 'Frontend tickets with UI/UX specifications and API integration details'
       }
@@ -112,14 +104,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'enhanced_product_tickets',
         description: 'Enhanced product tickets with technical contracts'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'be_tickets',
         description: 'Backend tickets with API specifications and database requirements'
       }
@@ -137,14 +127,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'enhanced_product_tickets',
         description: 'Enhanced product tickets with technical contracts'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'ai_tickets',
         description: 'AI tickets with ML model specifications and integration requirements'
       }
@@ -162,14 +150,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'fe_tickets',
         description: 'Frontend tickets to be broken into sub-tasks'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'fe_subtickets',
         description: 'Granular frontend implementation tasks'
       }
@@ -187,14 +173,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'be_tickets',
         description: 'Backend tickets to be broken into sub-tasks'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'be_subtickets',
         description: 'Granular backend implementation tasks'
       }
@@ -212,14 +196,12 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'document_creation',
     inputs: [
       {
-        isCollection: true,
         slug: 'ai_tickets',
         description: 'AI tickets to be broken into sub-tasks'
       }
     ],
     outputs: [
       {
-        isCollection: true,
         slug: 'ai_subtickets',
         description: 'Granular AI implementation tasks'
       }
@@ -237,7 +219,6 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'frontend_development',
     inputs: [
       {
-        isCollection: true,
         slug: 'fe_subtickets',
         description: 'Frontend sub-tickets ready for implementation'
       }
@@ -256,7 +237,6 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'backend_development',
     inputs: [
       {
-        isCollection: true,
         slug: 'be_subtickets',
         description: 'Backend sub-tickets ready for implementation'
       }
@@ -275,7 +255,6 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'backend_development', // Reuse backend workflow for now
     inputs: [
       {
-        isCollection: true,
         slug: 'ai_subtickets',
         description: 'AI sub-tickets ready for implementation'
       }
@@ -287,16 +266,15 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    slug: 'review_fe_subtickets',
-    name: 'Review Frontend Sub-tickets',
+    slug: 'review_fe_tickets',
+    name: 'Review Frontend Tickets',
     description: 'Frontend leads review frontend code changes for technical quality and standards',
     role: 'fe_lead', // Frontend Lead (reviewer role)
     workflow_slug: 'code_review',
     inputs: [
       {
-        isCollection: false,
-        slug: 'pull_request',
-        description: 'Frontend pull requests that need technical review'
+        slug: 'fe_tickets',
+        description: 'Technical review of front end tickets'
       }
     ],
     outputs: [], // No document outputs - changes PR status
@@ -306,16 +284,15 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    slug: 'review_be_subtickets',
-    name: 'Review Backend Sub-tickets',
+    slug: 'review_be_tickets',
+    name: 'Review Backend Tickets',
     description: 'Backend leads review backend code changes for technical quality and standards',
     role: 'be_lead', // Backend Lead (reviewer role)
     workflow_slug: 'code_review',
     inputs: [
       {
-        isCollection: false,
-        slug: 'pull_request',
-        description: 'Backend pull requests that need technical review'
+        slug: 'be_tickets',
+        description: 'Technical review of back end tickets'
       }
     ],
     outputs: [], // No document outputs - changes PR status
@@ -325,16 +302,15 @@ export const JOB_TEMPLATES: Job[] = [
   },
 
   {
-    slug: 'review_ai_subtickets',
-    name: 'Review AI Sub-tickets',
+    slug: 'review_ai_tickets',
+    name: 'Review AI Tickets',
     description: 'AI leads review AI code changes for technical quality and standards',
     role: 'ai_lead', // AI Lead (reviewer role)
     workflow_slug: 'code_review',
     inputs: [
       {
-        isCollection: false,
-        slug: 'pull_request',
-        description: 'AI pull requests that need technical review'
+        slug: 'ai_tickets',
+        description: 'Technical review of AI tickets'
       }
     ],
     outputs: [], // No document outputs - changes PR status
@@ -351,8 +327,25 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'qa_testing',
     inputs: [
       {
-        isCollection: true,
         slug: 'enhanced_product_tickets',
+        description: 'Enhanced product tickets whose FE/BE/AI tickets are all completed'
+      }
+    ],
+    outputs: [], // No document outputs - changes ticket status to done/rejected-qa
+    automated: true, // Completes automatically when outputs produced
+    completed: false,
+    paused: false,
+  },
+
+  {
+    slug: 'qa_review_features',
+    name: 'QA Review Features',
+    description: 'QA squad reviews completed features when all implementation is done',
+    role: 'qa', // QA Engineer
+    workflow_slug: 'qa_testing',
+    inputs: [
+      {
+        slug: 'features',
         description: 'Enhanced product tickets whose FE/BE/AI tickets are all completed'
       }
     ],

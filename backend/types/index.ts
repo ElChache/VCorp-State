@@ -96,13 +96,11 @@ export interface DatabaseDocument extends Document {
 }
 
 export interface JobInput {
-  isCollection: boolean; // true = collection, false = individual document
   slug: string; // Document slug or collection slug
   description: string;
 }
 
 export interface JobOutput {
-  isCollection: boolean; // true = collection, false = individual document  
   slug: string; // Document slug or collection slug
   description: string;
 }

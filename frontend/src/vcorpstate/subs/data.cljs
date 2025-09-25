@@ -36,6 +36,12 @@
 ;; COMPUTED DATA SUBSCRIPTIONS
 ;; ====================================
 
+;; Graph structure - pre-computed squad columns with root jobs
+(rf/reg-sub
+ :data/graph-structure
+ (fn [db _]
+   (get-in db [:data :graph_structure])))
+
 ;; Check if data is loaded
 (rf/reg-sub
  :data/loaded?

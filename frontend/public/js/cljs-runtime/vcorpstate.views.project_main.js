@@ -15,13 +15,13 @@ return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 2, 5, cljs.co
 } else {
 return null;
 }
-}),new cljs.core.Keyword(null,"component-did-update","component-did-update",-1468549173),(function (this$,p__12463){
-var vec__12464 = p__12463;
-var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12464,(0),null);
-var prev_props = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12464,(1),null);
-var vec__12467 = prev_props;
-var ___$1 = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12467,(0),null);
-var prev_project_id = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12467,(1),null);
+}),new cljs.core.Keyword(null,"component-did-update","component-did-update",-1468549173),(function (this$,p__12414){
+var vec__12415 = p__12414;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12415,(0),null);
+var prev_props = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12415,(1),null);
+var vec__12418 = prev_props;
+var ___$1 = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12418,(0),null);
+var prev_project_id = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12418,(1),null);
 if(cljs.core.truth_((function (){var and__5000__auto__ = selected_project_id;
 if(cljs.core.truth_(and__5000__auto__)){
 return cljs.core.not_EQ_.cljs$core$IFn$_invoke$arity$2(selected_project_id,prev_project_id);

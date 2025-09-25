@@ -26,16 +26,18 @@
    ;; Expanded sidebar section (:agents, :tickets, :documents, or nil)
    :expanded-sidebar-section nil
    
-   ;; Graph data structure (following architecture plan)
-   :graph {:collections {}     ;; Keyed by collection-id  
-           :documents {}       ;; Keyed by document-id
-           :jobs {}           ;; Keyed by job-id
-           :squads {}         ;; For layout columns
-           :roles {}          ;; Role information
-           :layout {}         ;; Node positions and layout data
-           :loading? false    ;; Loading state for initial data
-           :connected? false  ;; WebSocket connection status
-           :last-updated nil} ;; Timestamp of last update
+   ;; Project data loaded from backend
+   :data {:collections {}     ;; Keyed by collection-id  
+          :documents {}       ;; Keyed by document-id
+          :jobs {}           ;; Keyed by job-id
+          :squads {}         ;; Keyed by squad-id
+          :roles {}          ;; Keyed by role short-name
+          :graph_structure [] ;; Pre-computed squad columns with root jobs
+          :last-updated nil} ;; Timestamp of last update
+   
+   ;; App-level state
+   :app {:loading? false      ;; Loading state for initial data
+         :error nil}          ;; Error message
    
    ;; WebSocket connection
    :websocket {:connection nil
