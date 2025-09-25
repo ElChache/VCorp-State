@@ -43,4 +43,7 @@
    :websocket {:connection nil
                :connected? false
                :reconnect-attempts 0
-               :last-event nil}})
+               :last-event nil}
+   
+   ;; Dialog state
+   :dialogs {:launch-agents-open? false}})

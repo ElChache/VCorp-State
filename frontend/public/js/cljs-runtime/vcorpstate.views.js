@@ -1,9 +1,9 @@
 goog.provide('vcorpstate.views');
 vcorpstate.views.app = (function vcorpstate$views$app(){
 var current_view = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"current-view","current-view",-1037279042)], null)));
-var G__12641 = current_view;
-var G__12641__$1 = (((G__12641 instanceof cljs.core.Keyword))?G__12641.fqn:null);
-switch (G__12641__$1) {
+return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),(function (){var G__12405 = current_view;
+var G__12405__$1 = (((G__12405 instanceof cljs.core.Keyword))?G__12405.fqn:null);
+switch (G__12405__$1) {
 case "main":
 return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.views.project_main.project_main_view], null);
 
@@ -16,6 +16,7 @@ default:
 return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.views.main.project_selector], null);
 
 }
+})(),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.dialogs.dialogs], null)], null);
 });
 
 //# sourceMappingURL=vcorpstate.views.js.map

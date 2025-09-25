@@ -1,6 +1,8 @@
 (ns vcorpstate.components.sidebar
   (:require [re-frame.core :as rf]
-            [vcorpstate.routes :as routes]))
+            [vcorpstate.routes :as routes]
+            [vcorpstate.components.agents-section :refer [agents-section]]
+            [vcorpstate.components.sidebar-utils :refer [sidebar-content-item]]))
 
 (defn sidebar-back-button
   "Back button component for sidebar"
@@ -18,10 +20,6 @@
             :on-click #(rf/dispatch [:toggle-sidebar-section section])}
    [:div {:class "text-center font-bold" :style {:font-size "34px"}} icon]])
 
-(defn sidebar-content-item
-  "Single item in sidebar content panel"
-  [text]
-  [:div {:class "text-sm text-gray-700 cursor-pointer hover:bg-gray-50 p-2 rounded"} text])
 
 (defn sidebar-content-section
   "Content section for expanded sidebar"
@@ -52,7 +50,7 @@
            :on-click (fn [e] (.stopPropagation e))}
      [:div {:class "p-4"}
       (case expanded-section
-        :agents [sidebar-content-section "Agents" ["Manolo" "Juan" "Carlos"]]
+        :agents [agents-section]
         :tickets [sidebar-content-section "Tickets" ["#001 - Setup issue" "#002 - Bug report" "#003 - Feature request"]]
         :documents [sidebar-content-section "Documents" ["README.md" "API_DOCS.md" "CHANGELOG.md"]]
         nil)]]))
