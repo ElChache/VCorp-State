@@ -61,8 +61,13 @@ export class DatabaseOperations {
       });
 
       if (existing) {
-        // Update existing collection (no path field to update for collections)
-        return existing;
+        // Update existing collection with new path
+        return await prisma.documentCollection.update({
+          where: { id: existing.id },
+          data: {
+            path: folderPath
+          }
+        });
       } else {
         // Create new collection
         const description = documentType === 'initial_docs' 
@@ -75,6 +80,7 @@ export class DatabaseOperations {
             slug: slug,
             name: name,
             description: description,
+            path: folderPath,
             document_type: documentType
           }
         });
@@ -128,11 +134,12 @@ export class DatabaseOperations {
   }
 
   /**
-   * Read file content safely
+   * Read file content safely with cache bypass
    */
   async readFileContent(filePath: string): Promise<string> {
     try {
-      const content = await fs.readFile(filePath, 'utf8');
+      // Use 'rs' flag to bypass system cache for fresh file content
+      const content = await fs.readFile(filePath, { encoding: 'utf8', flag: 'rs' });
       return content;
     } catch (error) {
       console.error(`❌ Error reading file: ${filePath}`, error);

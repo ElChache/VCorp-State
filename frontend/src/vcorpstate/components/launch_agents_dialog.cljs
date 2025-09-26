@@ -43,5 +43,5 @@
                    :on-click #(rf/dispatch [:hide-launch-agents-dialog])}
           "Cancel"]
          [:button {:style {:padding "12px 24px" :background-color "#3b82f6" :color "#ffffff" :border "1px solid #3b82f6" :border-radius "8px" :cursor "pointer" :font-size "14px" :font-weight "500" :font-family "system-ui"}
-                   :on-click #(rf/dispatch [:hide-launch-agents-dialog])}
+                   :on-click #(rf/dispatch [:launch-agents])}
           "Launch"]]]])))

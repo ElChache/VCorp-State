@@ -17,6 +17,7 @@ import { createTemplateRoutes } from './routes/templates.js';
 import { createProjectRoutes } from './routes/projects.js';
 import { createFileWatcherRoutes } from './routes/file-watcher.js';
 import agentsRoutes from './routes/agents.js';
+import documentsRoutes from './routes/documents.js';
 
 const app = express();
 const port = process.env.BACKEND_PORT || process.env.PORT || 3001;
@@ -43,19 +44,24 @@ app.use(createHealthRoutes(realTimeEvents));
 app.use(createDataRoutes(db));
 app.use(createTestingRoutes(db, realTimeEvents));
 app.use(createTemplateRoutes());
-app.use(createProjectRoutes(seedingService));
+app.use(createProjectRoutes(seedingService, fileWatcher));
 app.use('/api/file-watcher', createFileWatcherRoutes(fileWatcher, db));
 app.use('/api/agents', agentsRoutes);
+app.use('/api/documents', documentsRoutes);
 
 // Server startup & shutdown
 async function startServer() {
   try {
     await realTimeEvents.startListening();
     
+    // Auto-start file watchers for existing projects
+    await startFileWatchersForAllProjects();
+    
     app.listen(port, () => {
       console.log(`🚀 VCorpState Backend running on http://localhost:${port}`);
       console.log(`🌐 WebSocket server running on ws://localhost:${wsPort}/ws`);
       console.log('📡 Real-time events: ACTIVE');
+      console.log('👁️  File watchers: AUTO-STARTED');
       console.log('');
       console.log('Architecture:');
       console.log('  - PostgreSQL triggers → NOTIFY events');  
@@ -66,6 +72,37 @@ async function startServer() {
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);
+  }
+}
+
+// Auto-start file watchers for all projects with valid paths
+async function startFileWatchersForAllProjects() {
+  try {
+    const projects = await db.transaction(async (prisma) => {
+      return await prisma.project.findMany({
+        select: {
+          id: true,
+          name: true,
+          path: true
+        }
+      });
+    }).then(projects => projects.filter(p => p.path !== null && p.path !== undefined && p.path.trim() !== ''));
+
+    console.log(`👁️  Starting file watchers for ${projects.length} projects...`);
+    
+    for (const project of projects) {
+      try {
+        await fileWatcher.startWatching({
+          projectId: project.id,
+          projectPath: project.path!,
+        });
+        console.log(`✅ File watcher started for project "${project.name}" (${project.path})`);
+      } catch (error) {
+        console.error(`❌ Failed to start file watcher for project "${project.name}":`, error);
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error auto-starting file watchers:', error);
   }
 }
 

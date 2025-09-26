@@ -139,6 +139,20 @@ POST /api/agents/launch               # Launch agents for a project
 }
 ```
 
+### Documents
+```bash
+PATCH /api/documents/:id/ready        # Update document ready status
+GET   /api/documents/ready            # Get all ready documents
+GET   /api/documents/ready/:projectId # Get ready documents for project
+```
+
+**Update Document Ready Status:**
+```json
+{
+  "ready": true         // true = ready, false = not ready
+}
+```
+
 ### Testing & Development
 ```bash
 POST /api/test/emit-event              # Emit test real-time event

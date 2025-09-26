@@ -41,8 +41,6 @@ router.post('/launch', async (req, res) => {
       });
     }
 
-    console.log(`🚀 Launching ${count} agents with role "${role}" for project ${projectId}`);
-
     // Get existing agent slugs for uniqueness check
     const existingAgentSlugs = await db.getAgentsSlugsForProject(projectId);
 
@@ -51,12 +49,10 @@ router.post('/launch', async (req, res) => {
     for (let i = 0; i < count; i++) {
       const slug = generateUniqueAgentSlug(projectId, [...existingAgentSlugs, ...agentData.map(a => a.slug)]);
       agentData.push({ slug, role });
-      console.log(`🤖 Generated agent name: ${slug} (role: ${role})`);
     }
 
     // Create agents in database
     const createdAgents = await db.createAgents(projectId, agentData);
-    console.log(`✅ Successfully created ${createdAgents.length} agents in database for project ${projectId}`);
 
     // Get project details for workspace creation
     const project = await db.getProjectById(projectId);
@@ -67,8 +63,9 @@ router.post('/launch', async (req, res) => {
       });
     }
 
-    // Setup workspace service
-    const vcorpRootPath = path.resolve(process.cwd());
+    // Setup workspace service  
+    // Resolve vcorp root path relative to this backend directory
+    const vcorpRootPath = path.resolve(__dirname, '..', '..');
     const workspaceService = new AgentWorkspaceService({
       projectId,
       projectPath: project.path,
@@ -76,7 +73,6 @@ router.post('/launch', async (req, res) => {
     });
 
     // Create workspaces for all agents
-    console.log(`🏗️  Setting up workspaces for ${createdAgents.length} agents...`);
     const workspaceResults = await workspaceService.createMultipleWorkspaces(createdAgents);
 
     // Check for any workspace creation failures
@@ -87,8 +83,6 @@ router.post('/launch', async (req, res) => {
       console.warn(`⚠️  ${failedWorkspaces.length} workspace(s) failed to create:`, 
         failedWorkspaces.map(w => `Agent ${w.agentId}: ${w.error}`));
     }
-
-    console.log(`✅ Successfully launched ${createdAgents.length} agents with ${successfulWorkspaces.length} workspaces for project ${projectId}`);
 
     res.json({
       success: true,

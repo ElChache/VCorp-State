@@ -63,6 +63,8 @@ BEGIN
     'slug', NEW.slug,
     'old_status', COALESCE(OLD.status, ''),
     'new_status', NEW.status,
+    'old_ready', COALESCE(OLD.ready, false),
+    'new_ready', NEW.ready,
     'assigned_to_role', NEW.assigned_to_role,
     'picked_by_agent_id', NEW.picked_by_agent_id,
     'timestamp', EXTRACT(EPOCH FROM NOW())
@@ -78,9 +80,10 @@ $$ LANGUAGE plpgsql;
 -- Trigger for document status changes
 DROP TRIGGER IF EXISTS document_change_trigger ON documents;
 CREATE TRIGGER document_change_trigger
-  AFTER UPDATE OF status, assigned_to_role, picked_by_agent_id ON documents
+  AFTER UPDATE OF status, ready, assigned_to_role, picked_by_agent_id ON documents
   FOR EACH ROW
   WHEN (OLD.status IS DISTINCT FROM NEW.status OR 
+        OLD.ready IS DISTINCT FROM NEW.ready OR
         OLD.assigned_to_role IS DISTINCT FROM NEW.assigned_to_role OR
         OLD.picked_by_agent_id IS DISTINCT FROM NEW.picked_by_agent_id)
   EXECUTE FUNCTION notify_document_change();
@@ -142,6 +145,7 @@ BEGIN
     'slug', NEW.slug,
     'name', NEW.name,
     'status', NEW.status,
+    'ready', NEW.ready,
     'document_type', NEW.document_type,
     'timestamp', EXTRACT(EPOCH FROM NOW())
   );
@@ -208,9 +212,52 @@ $$ LANGUAGE plpgsql;
 -- Trigger for collection progress (fires on document changes)
 DROP TRIGGER IF EXISTS collection_progress_trigger ON documents;
 CREATE TRIGGER collection_progress_trigger
-  AFTER INSERT OR UPDATE OF status OR DELETE ON documents
+  AFTER INSERT OR UPDATE OF status, ready OR DELETE ON documents
   FOR EACH ROW
   EXECUTE FUNCTION notify_collection_progress();
+
+-- =====================================================
+-- DOCUMENT COLLECTION CHANGES
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION notify_collection_change()
+RETURNS TRIGGER AS $$
+DECLARE
+  payload JSON;
+BEGIN
+  payload = json_build_object(
+    'type', 'collection_changed',
+    'collection_id', NEW.id,
+    'project_id', NEW.project_id,
+    'slug', NEW.slug,
+    'name', NEW.name,
+    'path', NEW.path,
+    'document_type', NEW.document_type,
+    'timestamp', EXTRACT(EPOCH FROM NOW())
+  );
+  
+  PERFORM pg_notify('vcorp_events', payload::text);
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for document collection changes (especially path updates)
+DROP TRIGGER IF EXISTS collection_change_trigger ON document_collections;
+CREATE TRIGGER collection_change_trigger
+  AFTER UPDATE ON document_collections
+  FOR EACH ROW
+  WHEN (OLD.path IS DISTINCT FROM NEW.path OR
+        OLD.name IS DISTINCT FROM NEW.name OR
+        OLD.document_type IS DISTINCT FROM NEW.document_type)
+  EXECUTE FUNCTION notify_collection_change();
+
+-- Trigger for new document collection creation
+DROP TRIGGER IF EXISTS collection_created_trigger ON document_collections;
+CREATE TRIGGER collection_created_trigger
+  AFTER INSERT ON document_collections
+  FOR EACH ROW
+  EXECUTE FUNCTION notify_collection_change();
 
 -- =====================================================
 -- AGENT ACTIVITY (Future - when agent system is built)

@@ -35,25 +35,21 @@ export class AgentWorkspaceService {
     const agentId = agent.id;
     
     try {
-      console.log(`🏗️  Creating workspace for agent ${agentId} (${agent.slug})`);
-
       // 1. Create agent workspace directory
       const workspacePath = path.join(
         this.config.projectPath,
-        'agents_workspaces',
+        'agent_workspaces',
         agentId.toString()
       );
 
-      await this.ensureDirectoryExists(workspacePath, `agent ${agentId} workspace`);
+      await this.ensureDirectoryExists(workspacePath);
 
       // 2. Create bin directory
       const binPath = path.join(workspacePath, 'bin');
-      await this.ensureDirectoryExists(binPath, `agent ${agentId} bin directory`);
+      await this.ensureDirectoryExists(binPath);
 
       // 3. Create vcorp wrapper script
       await this.createVcorpWrapper(binPath, agentId, this.config.projectId);
-
-      console.log(`✅ Successfully created workspace for agent ${agentId} at: ${workspacePath}`);
 
       return {
         success: true,
@@ -80,8 +76,6 @@ export class AgentWorkspaceService {
    * @returns Promise<WorkspaceCreationResult[]>
    */
   async createMultipleWorkspaces(agents: DatabaseAgent[]): Promise<WorkspaceCreationResult[]> {
-    console.log(`🏗️  Creating workspaces for ${agents.length} agents`);
-
     const results = await Promise.allSettled(
       agents.map(agent => this.createAgentWorkspace(agent))
     );
@@ -117,7 +111,6 @@ export class AgentWorkspaceService {
     const scriptContent = this.generateVcorpWrapperScript(vcorpAdminPath, agentId, projectId);
 
     await fs.writeFile(vcorpScriptPath, scriptContent, { mode: 0o755 });
-    console.log(`📝 Created vcorp wrapper for agent ${agentId}: ${vcorpScriptPath}`);
   }
 
   /**
@@ -131,9 +124,7 @@ export class AgentWorkspaceService {
     return `#!/usr/bin/env node
 
 // VCorp Agent Wrapper Script
-// Auto-generated for Agent ID: ${agentId}
-// Project ID: ${projectId}
-// Generated at: ${new Date().toISOString()}
+// Agent ID: ${agentId} | Project ID: ${projectId}
 
 const { spawn } = require('child_process');
 const path = require('path');
@@ -169,15 +160,12 @@ child.on('error', (error) => {
   /**
    * Ensure a directory exists, creating it if necessary
    * @param dirPath - Directory path to create
-   * @param description - Human-readable description for logging
    */
-  private async ensureDirectoryExists(dirPath: string, description: string): Promise<void> {
+  private async ensureDirectoryExists(dirPath: string): Promise<void> {
     try {
       await fs.access(dirPath);
-      console.log(`📁 Directory already exists: ${description} (${dirPath})`);
     } catch {
       await fs.mkdir(dirPath, { recursive: true });
-      console.log(`📁 Created directory: ${description} (${dirPath})`);
     }
   }
 
@@ -189,7 +177,7 @@ child.on('error', (error) => {
   getAgentWorkspacePath(agentId: number): string {
     return path.join(
       this.config.projectPath,
-      'agents_workspaces',
+      'agent_workspaces',
       agentId.toString()
     );
   }

@@ -32,15 +32,11 @@ export class FileEventHandler {
       const { agentId, folderName } = parsedPath;
       const slug = this.pathResolver.sanitizeSlug(folderName);
 
-      console.log(`📂 New agent workspace folder detected: ${agentId}/${folderName}`);
-
       // Check if document collection already exists
       const existingCollection = await this.dbOps.findDocumentCollectionBySlug(projectId, slug);
       
       if (!existingCollection) {
-        // Create new document collection
-        await this.dbOps.createDocumentCollection(projectId, slug, folderName, dirPath);
-        console.log(`✅ Created document collection: ${slug}`);
+        await this.dbOps.createOrUpdateDocumentCollection(projectId, slug, folderName, dirPath, 'agent_workspace');
       }
     } catch (error) {
       console.error(`❌ Error handling directory addition: ${event.path}`, error);
@@ -62,9 +58,6 @@ export class FileEventHandler {
       if (!parsedPath) {
         return;
       }
-
-      const { folderName } = parsedPath;
-      console.log(`📂 Agent workspace folder removed: ${folderName}`);
 
       // Note: We don't automatically delete document collections on folder removal
       // as they might contain important data. This should be handled manually or
@@ -101,23 +94,17 @@ export class FileEventHandler {
       const folderSlug = this.pathResolver.sanitizeSlug(folderName);
       const fileSlug = this.pathResolver.sanitizeSlug(path.parse(fileName).name);
 
-      console.log(`📄 New file detected: ${agentId}/${folderName}/${fileName}`);
-
       // Ensure document collection exists
       let collection = await this.dbOps.findDocumentCollectionBySlug(projectId, folderSlug);
       
       if (!collection) {
         const folderPath = path.join(workspacesPath, agentId, folderName);
         collection = await this.dbOps.createOrUpdateDocumentCollection(projectId, folderSlug, folderName, folderPath, 'agent_workspace');
-        console.log(`✅ Created document collection for new file: ${folderSlug}`);
       }
 
-      // Read file content
+      // Read file content and create/update document
       const content = await this.dbOps.readFileContent(filePath);
-      
-      // Create or update document
       await this.dbOps.createOrUpdateDocument(projectId, collection.id, fileSlug, fileName, content, filePath);
-      console.log(`✅ Created/updated document: ${fileSlug}`);
 
     } catch (error) {
       console.error(`❌ Error handling file addition: ${event.path}`, error);
@@ -143,8 +130,6 @@ export class FileEventHandler {
     // Remove .md extension for slug
     const fileSlug = this.pathResolver.sanitizeSlug(path.parse(fileName).name);
 
-    console.log(`📄 New initial-docs file detected: ${fileName}`);
-
     // Ensure initial-docs document collection exists
     let collection = await this.dbOps.findDocumentCollectionBySlug(projectId, 'initial-docs');
     
@@ -156,15 +141,11 @@ export class FileEventHandler {
         initialDocsPath, 
         'initial_docs'
       );
-      console.log(`✅ Created initial-docs document collection`);
     }
 
-    // Read file content
+    // Read file content and create/update document
     const content = await this.dbOps.readFileContent(filePath);
-    
-    // Create or update document
     await this.dbOps.createOrUpdateDocument(projectId, collection.id, fileSlug, fileName, content, filePath);
-    console.log(`✅ Created/updated initial-docs document: ${fileSlug}`);
   }
 
   /**
@@ -173,10 +154,6 @@ export class FileEventHandler {
   async handleFileRemoved(event: FileEvent): Promise<void> {
     try {
       const { path: filePath } = event;
-      const fileName = path.basename(filePath);
-
-      console.log(`📄 File removed: ${fileName}`);
-
       // Note: We don't automatically delete documents on file removal
       // as they might contain important processing history. This should be 
       // handled manually or via a separate cleanup process.

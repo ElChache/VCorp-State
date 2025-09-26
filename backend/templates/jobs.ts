@@ -12,8 +12,8 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'product_design',
     inputs: [
       {
-        slug: 'release',
-        description: 'Release document describing the overall product vision and requirements'
+        slug: 'initial-docs',
+        description: 'Initial documents describing the overall product vision and requirements'
       }
     ],
     outputs: [

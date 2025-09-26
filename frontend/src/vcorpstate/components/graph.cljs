@@ -1,9 +1,16 @@
 (ns vcorpstate.components.graph
   (:require [re-frame.core :as rf]))
 
+(defn get-collection-border-class
+  "Returns CSS class for collection border based on whether it has a path"
+  [collections-by-slug slug]
+  (let [collection (get collections-by-slug slug)
+        has-path? (and collection (:path collection))]
+    (if has-path? "collection-with-path" "collection-without-path")))
+
 (defn render-job-level
   "Renders a single level of jobs horizontally (side by side)"
-  [jobs-map jobs-by-slug level]
+  [jobs-map jobs-by-slug collections-by-slug level]
   (when (not-empty jobs-map)
     [:div {:class "mb-4"}
      ;; Current level jobs rendered horizontally and centered
@@ -18,10 +25,17 @@
                   [:div {:class "flex justify-center mb-1"
                          :style {:gap "0.5rem"}}
                    (map (fn [input]
-                          ^{:key (str job-slug "-input-" (:slug input))}
-                          [:div {:class "bg-blue-100 border border-blue-300 rounded px-3 py-2 text-sm"}
-                           [:div {:class "font-medium text-blue-800"}
-                            (:slug input)]])
+                          (let [collection (get collections-by-slug (:slug input))
+                                border-class (get-collection-border-class collections-by-slug (:slug input))
+                                all-ready? (:all-documents-ready? collection false)
+                                ready-count (:ready-documents collection 0)
+                                total-count (:total-documents collection 0)
+                                bg-class (if all-ready? "bg-blue-200" "bg-blue-100")]
+                            ^{:key (str job-slug "-input-" (:slug input))}
+                            [:div {:class (str bg-class " rounded px-3 py-2 text-sm cursor-pointer " border-class)
+                                   :on-click #(rf/dispatch [:show-document-dialog (:slug input)])}
+                             [:div {:class "font-medium text-blue-800"}
+                              (str (:slug input) " " ready-count "/" total-count)]]))
                         (:inputs job))])
                 
                 ;; Job box
@@ -34,15 +48,22 @@
                   [:div {:class "flex justify-center mt-1"
                          :style {:gap "0.5rem"}}
                    (map (fn [output]
-                          ^{:key (str job-slug "-output-" (:slug output))}
-                          [:div {:class "bg-green-100 border border-green-300 rounded px-3 py-2 text-sm"}
-                           [:div {:class "font-medium text-green-800"}
-                            (:slug output)]])
+                          (let [collection (get collections-by-slug (:slug output))
+                                border-class (get-collection-border-class collections-by-slug (:slug output))
+                                all-ready? (:all-documents-ready? collection false)
+                                ready-count (:ready-documents collection 0)
+                                total-count (:total-documents collection 0)
+                                bg-class (if all-ready? "bg-green-200" "bg-green-100")]
+                            ^{:key (str job-slug "-output-" (:slug output))}
+                            [:div {:class (str bg-class " rounded px-3 py-2 text-sm cursor-pointer " border-class)
+                                   :on-click #(rf/dispatch [:show-document-dialog (:slug output)])}
+                             [:div {:class "font-medium text-green-800"}
+                              (str (:slug output) " " ready-count "/" total-count)]]))
                         (:outputs job))])]))
            jobs-map)]
      ;; Recursively render next level - collect all children from current level
      (let [all-children (apply merge (vals jobs-map))]
-       [render-job-level all-children jobs-by-slug (inc level)])]))
+       [render-job-level all-children jobs-by-slug collections-by-slug (inc level)])]))
 
 (defn squad-column
   "Renders a single squad column with title and jobs"
@@ -57,8 +78,9 @@
       
       ;; Jobs content area
       [:div {:class "p-3"}
-       (let [jobs-by-slug @(rf/subscribe [:data/jobs-by-slug])]
-         [render-job-level jobs jobs-by-slug 0])]]]))
+       (let [jobs-by-slug @(rf/subscribe [:data/jobs-by-slug])
+             collections-with-stats @(rf/subscribe [:data/collections-with-stats])]
+         [render-job-level jobs jobs-by-slug collections-with-stats 0])]]]))
 
 (defn graph-component
   []

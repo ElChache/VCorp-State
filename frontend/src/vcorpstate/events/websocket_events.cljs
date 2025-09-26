@@ -54,6 +54,7 @@
        "document_status_changed" (rf/dispatch [:data/document-status-changed event])
        "job_status_changed" (rf/dispatch [:data/job-status-changed event])
        "collection_progress_updated" (rf/dispatch [:data/collection-progress-updated event])
+       "collection_changed" (rf/dispatch [:data/collection-changed event])
        "document_created" (rf/dispatch [:data/document-created event])
        "connection_established" (js/console.log "WebSocket connection established")
        "subscription_confirmed" (js/console.log "Project subscription confirmed")

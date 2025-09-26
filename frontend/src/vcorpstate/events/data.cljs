@@ -151,8 +151,10 @@
 (rf/reg-event-db
  :data/document-status-changed
  (fn [db [_ event]]
-   (let [{:keys [document_id new_status]} event]
-     (assoc-in db [:data :documents document_id :status] new_status))))
+   (let [{:keys [document_id new_status new_ready]} event]
+     (-> db
+         (assoc-in [:data :documents document_id :status] new_status)
+         (assoc-in [:data :documents document_id :ready] new_ready)))))
 
 ;; Handle job status changes
 (rf/reg-event-db
@@ -175,5 +177,27 @@
 (rf/reg-event-db
  :data/document-created
  (fn [db [_ event]]
-   (let [{:keys [document]} event]
-     (assoc-in db [:data :documents (:id document)] document))))
+   (let [{:keys [document_id project_id collection_id slug name status ready document_type]} event
+         document {:id document_id
+                   :project_id project_id
+                   :document_collection_id collection_id
+                   :slug slug
+                   :name name
+                   :status status
+                   :ready ready
+                   :document_type document_type}]
+     (-> db
+         (assoc-in [:data :documents document_id] document)
+         (assoc-in [:data :documents-by-slug slug] document)))))
+
+;; Handle collection changes (especially path updates)
+(rf/reg-event-db
+ :data/collection-changed
+ (fn [db [_ event]]
+   (let [{:keys [collection_id slug name path document_type]} event]
+     (assoc-in db [:data :collections collection_id] 
+               {:id collection_id
+                :slug slug
+                :name name
+                :path path
+                :document_type document_type}))))

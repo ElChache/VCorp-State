@@ -43,3 +43,25 @@
      :error-handler #(rf/dispatch [:create-project-error %])
      :format (ajax/json-request-format)
      :response-format (ajax/json-response-format {:keywords? true})}))
+
+(defn launch-agents
+  "Launch agents for a project role"
+  [project-id role count]
+  (ajax/POST (str api-base-url "/api/agents/launch")
+    {:params {:projectId project-id
+              :role role
+              :count count}
+     :handler #(rf/dispatch [:agents/launch-success role %])
+     :error-handler #(rf/dispatch [:agents/launch-error role %])
+     :format (ajax/json-request-format)
+     :response-format (ajax/json-response-format {:keywords? true})}))
+
+(defn update-document-status
+  "Update document status (ready/not ready)"
+  [document-slug status]
+  (ajax/PUT (str api-base-url "/api/documents/" document-slug "/status")
+    {:params {:status status}
+     :handler #(rf/dispatch [:document/status-updated document-slug status %])
+     :error-handler #(rf/dispatch [:document/status-update-failed document-slug %])
+     :format (ajax/json-request-format)
+     :response-format (ajax/json-response-format {:keywords? true})}))

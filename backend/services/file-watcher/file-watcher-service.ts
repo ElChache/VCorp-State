@@ -42,9 +42,6 @@ export class FileWatcherService {
     // Stop existing watcher for this project if any
     await this.stopWatching(projectId);
 
-    console.log(`👁️  Starting file watcher for project ${projectId}`);
-    console.log(`  - Agent workspaces: ${workspacesPath}`);
-    console.log(`  - Initial docs: ${initialDocsPath}`);
 
     // Create watchers for both directories
     const workspacesWatcher = this.createWatcher(workspacesPath);
@@ -81,7 +78,6 @@ export class FileWatcherService {
     
     if (workspacesWatcher || initialDocsWatcher) {
       this.projectConfigs.delete(projectId);
-      console.log(`🛑 Stopped file watchers for project ${projectId}`);
     }
   }
 
@@ -104,11 +100,8 @@ export class FileWatcherService {
    * Clean up all watchers
    */
   async close(): Promise<void> {
-    console.log('🛑 Closing all file watchers...');
-    
     for (const [key, watcher] of this.watchers.entries()) {
       await watcher.close();
-      console.log(`✅ Closed watcher: ${key}`);
     }
     
     this.watchers.clear();
@@ -121,10 +114,8 @@ export class FileWatcherService {
     try {
       await fs.access(workspacesPath);
     } catch (error) {
-      console.log(`📁 Agent workspaces directory does not exist yet: ${workspacesPath}`);
       try {
         await fs.mkdir(workspacesPath, { recursive: true });
-        console.log(`📁 Created agent workspaces directory: ${workspacesPath}`);
       } catch (createError) {
         console.error(`❌ Failed to create workspaces directory: ${createError}`);
         throw createError;
@@ -132,13 +123,23 @@ export class FileWatcherService {
     }
   }
 
-  private createWatcher(workspacesPath: string): chokidar.FSWatcher {
-    return chokidar.watch(workspacesPath, {
+  private createWatcher(watchPath: string): chokidar.FSWatcher {
+    const watcher = chokidar.watch(watchPath, {
       ignored: /(^|[\/\\])\../, // ignore dotfiles
       persistent: true,
-      depth: 10, // watch nested folders
-      ignoreInitial: false // process existing files/folders
+      ignoreInitial: false, // process existing files/folders
+      usePolling: false, // Use native fs.watch
+      depth: 99, // Allow deep directory watching
+      followSymlinks: false,
+      atomic: true, // Helps with file detection
+      awaitWriteFinish: { // Wait for writes to complete
+        stabilityThreshold: 500,
+        pollInterval: 100
+      },
+      alwaysStat: true // Provide stats for change detection
     });
+    
+    return watcher;
   }
 
   private setupWatcherEvents(watcher: chokidar.FSWatcher, projectId: number, workspacesPath: string, initialDocsPath: string): void {
@@ -178,6 +179,18 @@ export class FileWatcherService {
       await this.eventHandler.handleFileAdded(event);
     });
 
+    // Handle file changes
+    watcher.on('change', async (filePath: string) => {
+      const event: FileEvent = {
+        type: 'add', // Reuse add handler for updates
+        path: filePath,
+        projectId,
+        workspacesPath,
+        initialDocsPath
+      };
+      await this.eventHandler.handleFileAdded(event);
+    });
+
     // Handle file removal
     watcher.on('unlink', async (filePath: string) => {
       const event: FileEvent = {
@@ -195,8 +208,5 @@ export class FileWatcherService {
       console.error(`❌ File watcher error for project ${projectId}:`, error);
     });
 
-    watcher.on('ready', () => {
-      console.log(`✅ File watcher ready for project ${projectId}`);
-    });
   }
 }

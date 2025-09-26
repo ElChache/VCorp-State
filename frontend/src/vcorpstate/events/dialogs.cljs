@@ -27,6 +27,105 @@
    (let [count (max 0 new-count)]
      (assoc-in db [:dialogs :role-counts role-short-name] count))))
 
+;; Launch agents (triggers multiple API calls)
+(rf/reg-event-fx
+ :launch-agents
+ (fn [{:keys [db]} _]
+   (let [role-counts (get-in db [:dialogs :role-counts])
+         project-id (get-in db [:data :selected-project-id])
+         launch-requests (filter #(> (second %) 0) role-counts)]
+     (js/console.log "Launching agents:" (clj->js launch-requests) "for project:" project-id)
+     (if (and project-id (seq launch-requests))
+       {:db (-> db
+                (assoc-in [:dialogs :launching-agents?] true)
+                (assoc-in [:dialogs :agent-launch-results] [])
+                (assoc-in [:dialogs :agent-launch-error] nil))
+        :dispatch-n (mapv (fn [[role count]]
+                            [:http/launch-agents project-id role count])
+                          launch-requests)}
+       {:db (assoc-in db [:dialogs :agent-launch-error] "Please select roles to launch")}))))
+
+;; HTTP event handler for launching agents
+(rf/reg-event-fx
+ :http/launch-agents
+ (fn [_ [_ project-id role count]]
+   (http/launch-agents project-id role count)
+   {}))
+
+;; Handle successful agent launch
+(rf/reg-event-db
+ :agents/launch-success
+ (fn [db [_ role response]]
+   (js/console.log "Agents launched successfully for role" role ":" (clj->js response))
+   (let [current-results (get-in db [:dialogs :agent-launch-results] [])
+         new-result {:role role :success true :response response}]
+     (-> db
+         (update-in [:dialogs :agent-launch-results] conj new-result)
+         (assoc-in [:dialogs :launching-agents?] false)))))
+
+;; Handle agent launch failure  
+(rf/reg-event-db
+ :agents/launch-error
+ (fn [db [_ role error]]
+   (js/console.error "Agent launch failed for role" role ":" (clj->js error))
+   (let [current-results (get-in db [:dialogs :agent-launch-results] [])
+         new-result {:role role :success false :error error}]
+     (-> db
+         (update-in [:dialogs :agent-launch-results] conj new-result)
+         (assoc-in [:dialogs :launching-agents?] false)
+         (assoc-in [:dialogs :agent-launch-error] (str "Failed to launch " role " agents: " (or (:message error) "Unknown error")))))))
+
+;; ====================================
+;; DOCUMENT DIALOG
+;; ====================================
+
+;; Show document dialog
+(rf/reg-event-db
+ :show-document-dialog
+ (fn [db [_ document-slug]]
+   (js/console.log "Opening document dialog for:" document-slug)
+   (-> db
+       (assoc-in [:dialogs :document-open?] true)
+       (assoc-in [:dialogs :selected-document] document-slug))))
+
+;; Hide document dialog
+(rf/reg-event-db
+ :hide-document-dialog
+ (fn [db _]
+   (-> db
+       (assoc-in [:dialogs :document-open?] false)
+       (assoc-in [:dialogs :selected-document] nil))))
+
+;; Toggle document status
+(rf/reg-event-fx
+ :toggle-document-status
+ (fn [{:keys [db]} [_ document-slug]]
+   (let [current-status (get-in db [:data :documents-by-slug document-slug :status] "not ready")
+         new-status (if (= current-status "ready") "not ready" "ready")]
+     (js/console.log "Toggling document status for" document-slug "from" current-status "to" new-status)
+     {:dispatch [:http/update-document-status document-slug new-status]})))
+
+;; HTTP event handler for updating document status
+(rf/reg-event-fx
+ :http/update-document-status
+ (fn [_ [_ document-slug status]]
+   (http/update-document-status document-slug status)
+   {}))
+
+;; Handle successful document status update
+(rf/reg-event-db
+ :document/status-updated
+ (fn [db [_ document-slug status response]]
+   (js/console.log "Document status updated successfully:" document-slug "to" status)
+   (assoc-in db [:data :documents-by-slug document-slug :status] status)))
+
+;; Handle document status update failure
+(rf/reg-event-db
+ :document/status-update-failed
+ (fn [db [_ document-slug error]]
+   (js/console.error "Failed to update document status:" document-slug error)
+   db))
+
 ;; ====================================
 ;; CREATE PROJECT DIALOG
 ;; ====================================

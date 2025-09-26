@@ -62,6 +62,7 @@ export interface DocumentCollection {
   slug: string;
   name: string;
   description?: string;
+  path?: string;
   document_type: string; // e.g., 'feature', 'product_ticket', 'enhanced_product_ticket'
 }
 
@@ -83,6 +84,7 @@ export interface Document {
   status: 'blocked' | 'ready' | 'in_progress' | 'done';
   assigned_to_role?: string; // Optional role assignment (e.g., "fe", "be", "ai")
   picked_by_agent_id?: string; // ID of agent currently working on this document
+  ready: boolean; // Whether document is ready for processing
   metadata: Record<string, any>; // Type-specific information
 }
 

@@ -140,6 +140,7 @@ model DocumentCollection {
   slug          String   @db.VarChar(100)
   name          String   @db.VarChar(255)
   description   String?  @db.Text
+  path          String?  @db.VarChar(500)
   document_type String   @db.VarChar(100)
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now()) @updatedAt
@@ -166,6 +167,7 @@ model Document {
   status                 String  @default("ready") @db.VarChar(50)
   assigned_to_role       String?   @db.VarChar(50)
   picked_by_agent_id     String?   @db.VarChar(255)
+  ready                  Boolean   @default(false)
   metadata               Json      @default("{}") @db.JsonB
   created_at             DateTime  @default(now())
   updated_at             DateTime  @default(now()) @updatedAt

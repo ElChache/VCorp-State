@@ -69,6 +69,7 @@ export class DatabaseService {
       slug: collection.slug,
       name: collection.name,
       description: collection.description,
+      path: collection.path,
       document_type: collection.document_type,
       created_at: collection.created_at.toISOString(),
       updated_at: collection.updated_at.toISOString()
@@ -125,6 +126,7 @@ export class DatabaseService {
       parent_document_id: document.parent_document_id,
       blocked_by: document.blocked_by,
       status: document.status,
+      ready: document.ready,
       assigned_to_role: document.assigned_to_role,
       picked_by_agent_id: document.picked_by_agent_id,
       metadata: document.metadata,
@@ -283,6 +285,43 @@ export class DatabaseService {
   async getProjectById(projectId: number) {
     return await this.prisma.project.findUnique({
       where: { id: projectId }
+    });
+  }
+
+  // =====================================================
+  // DOCUMENTS (using Prisma ORM) 
+  // =====================================================
+
+  async getDocumentById(documentId: number) {
+    return await this.prisma.document.findUnique({
+      where: { id: documentId }
+    });
+  }
+
+  async updateDocumentReady(documentId: number, ready: boolean) {
+    return await this.prisma.document.update({
+      where: { id: documentId },
+      data: { 
+        ready,
+        updated_at: new Date()
+      }
+    });
+  }
+
+  async getReadyDocuments() {
+    return await this.prisma.document.findMany({
+      where: { ready: true },
+      orderBy: { updated_at: 'desc' }
+    });
+  }
+
+  async getReadyDocumentsByProject(projectId: number) {
+    return await this.prisma.document.findMany({
+      where: { 
+        project_id: projectId,
+        ready: true 
+      },
+      orderBy: { updated_at: 'desc' }
     });
   }
 

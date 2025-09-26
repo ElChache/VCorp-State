@@ -22,25 +22,25 @@ return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMP
 return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"hide-launch-agents-dialog","hide-launch-agents-dialog",-856372398)], null));
 })], null),new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"style","style",-496642736),cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null,"box-shadow","box-shadow",1600206755),new cljs.core.Keyword(null,"max-height","max-height",-612563804),new cljs.core.Keyword(null,"background-color","background-color",570434026),new cljs.core.Keyword(null,"width","width",-384071477),new cljs.core.Keyword(null,"max-width","max-width",-1939924051),new cljs.core.Keyword(null,"padding","padding",1660304693),new cljs.core.Keyword(null,"overflow-y","overflow-y",-1436589285),new cljs.core.Keyword(null,"border-radius","border-radius",419594011),new cljs.core.Keyword(null,"margin","margin",-995903681)],["0 25px 50px -12px rgba(0, 0, 0, 0.25)","80vh","white","100%","500px","24px","auto","8px","16px"]),new cljs.core.Keyword(null,"on-click","on-click",1632826543),(function (e){
 return e.stopPropagation();
-})], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"mb-6"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto"], null),((cljs.core.seq(roles))?(function (){var iter__5480__auto__ = (function vcorpstate$components$launch_agents_dialog$launch_agents_dialog_$_iter__12426(s__12427){
+})], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"mb-6"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto"], null),((cljs.core.seq(roles))?(function (){var iter__5480__auto__ = (function vcorpstate$components$launch_agents_dialog$launch_agents_dialog_$_iter__12556(s__12557){
 return (new cljs.core.LazySeq(null,(function (){
-var s__12427__$1 = s__12427;
+var s__12557__$1 = s__12557;
 while(true){
-var temp__5804__auto__ = cljs.core.seq(s__12427__$1);
+var temp__5804__auto__ = cljs.core.seq(s__12557__$1);
 if(temp__5804__auto__){
-var s__12427__$2 = temp__5804__auto__;
-if(cljs.core.chunked_seq_QMARK_(s__12427__$2)){
-var c__5478__auto__ = cljs.core.chunk_first(s__12427__$2);
+var s__12557__$2 = temp__5804__auto__;
+if(cljs.core.chunked_seq_QMARK_(s__12557__$2)){
+var c__5478__auto__ = cljs.core.chunk_first(s__12557__$2);
 var size__5479__auto__ = cljs.core.count(c__5478__auto__);
-var b__12429 = cljs.core.chunk_buffer(size__5479__auto__);
-if((function (){var i__12428 = (0);
+var b__12563 = cljs.core.chunk_buffer(size__5479__auto__);
+if((function (){var i__12562 = (0);
 while(true){
-if((i__12428 < size__5479__auto__)){
-var role = cljs.core._nth(c__5478__auto__,i__12428);
-cljs.core.chunk_append(b__12429,cljs.core.with_meta(new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.launch_agents_dialog.role_counter_row,role,role_counts], null),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"short_name","short_name",1420585806).cljs$core$IFn$_invoke$arity$1(role)], null)));
+if((i__12562 < size__5479__auto__)){
+var role = cljs.core._nth(c__5478__auto__,i__12562);
+cljs.core.chunk_append(b__12563,cljs.core.with_meta(new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.launch_agents_dialog.role_counter_row,role,role_counts], null),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"short_name","short_name",1420585806).cljs$core$IFn$_invoke$arity$1(role)], null)));
 
-var G__12430 = (i__12428 + (1));
-i__12428 = G__12430;
+var G__12572 = (i__12562 + (1));
+i__12562 = G__12572;
 continue;
 } else {
 return true;
@@ -48,13 +48,13 @@ return true;
 break;
 }
 })()){
-return cljs.core.chunk_cons(cljs.core.chunk(b__12429),vcorpstate$components$launch_agents_dialog$launch_agents_dialog_$_iter__12426(cljs.core.chunk_rest(s__12427__$2)));
+return cljs.core.chunk_cons(cljs.core.chunk(b__12563),vcorpstate$components$launch_agents_dialog$launch_agents_dialog_$_iter__12556(cljs.core.chunk_rest(s__12557__$2)));
 } else {
-return cljs.core.chunk_cons(cljs.core.chunk(b__12429),null);
+return cljs.core.chunk_cons(cljs.core.chunk(b__12563),null);
 }
 } else {
-var role = cljs.core.first(s__12427__$2);
-return cljs.core.cons(cljs.core.with_meta(new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.launch_agents_dialog.role_counter_row,role,role_counts], null),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"short_name","short_name",1420585806).cljs$core$IFn$_invoke$arity$1(role)], null)),vcorpstate$components$launch_agents_dialog$launch_agents_dialog_$_iter__12426(cljs.core.rest(s__12427__$2)));
+var role = cljs.core.first(s__12557__$2);
+return cljs.core.cons(cljs.core.with_meta(new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.launch_agents_dialog.role_counter_row,role,role_counts], null),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"short_name","short_name",1420585806).cljs$core$IFn$_invoke$arity$1(role)], null)),vcorpstate$components$launch_agents_dialog$launch_agents_dialog_$_iter__12556(cljs.core.rest(s__12557__$2)));
 }
 } else {
 return null;
@@ -67,7 +67,7 @@ return iter__5480__auto__(cljs.core.vals(roles));
 })():new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"text-gray-500 text-center py-8 px-4"], null),"Loading roles..."], null))], null)], null),new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"style","style",-496642736),new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"display","display",242065432),"flex",new cljs.core.Keyword(null,"justify-content","justify-content",-1990475787),"flex-end",new cljs.core.Keyword(null,"gap","gap",80255254),"12px",new cljs.core.Keyword(null,"margin-top","margin-top",392161226),"20px"], null)], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"button","button",1456579943),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"style","style",-496642736),cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null,"color","color",1011675173),new cljs.core.Keyword(null,"font-size","font-size",-1847940346),new cljs.core.Keyword(null,"font-weight","font-weight",2085804583),new cljs.core.Keyword(null,"background-color","background-color",570434026),new cljs.core.Keyword(null,"cursor","cursor",1011937484),new cljs.core.Keyword(null,"padding","padding",1660304693),new cljs.core.Keyword(null,"border","border",1444987323),new cljs.core.Keyword(null,"border-radius","border-radius",419594011),new cljs.core.Keyword(null,"font-family","font-family",-667419874)],["#374151","14px","500","#f3f4f6","pointer","12px 24px","1px solid #d1d5db","8px","system-ui"]),new cljs.core.Keyword(null,"on-click","on-click",1632826543),(function (){
 return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"hide-launch-agents-dialog","hide-launch-agents-dialog",-856372398)], null));
 })], null),"Cancel"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"button","button",1456579943),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"style","style",-496642736),cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null,"color","color",1011675173),new cljs.core.Keyword(null,"font-size","font-size",-1847940346),new cljs.core.Keyword(null,"font-weight","font-weight",2085804583),new cljs.core.Keyword(null,"background-color","background-color",570434026),new cljs.core.Keyword(null,"cursor","cursor",1011937484),new cljs.core.Keyword(null,"padding","padding",1660304693),new cljs.core.Keyword(null,"border","border",1444987323),new cljs.core.Keyword(null,"border-radius","border-radius",419594011),new cljs.core.Keyword(null,"font-family","font-family",-667419874)],["#ffffff","14px","500","#3b82f6","pointer","12px 24px","1px solid #3b82f6","8px","system-ui"]),new cljs.core.Keyword(null,"on-click","on-click",1632826543),(function (){
-return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"hide-launch-agents-dialog","hide-launch-agents-dialog",-856372398)], null));
+return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"launch-agents","launch-agents",-390054830)], null));
 })], null),"Launch"], null)], null)], null)], null);
 } else {
 return null;

@@ -28,6 +28,36 @@
    (get-in db [:data :jobs-by-slug])))
 
 (rf/reg-sub
+ :data/collections-by-slug
+ :<- [:data/collections]
+ (fn [collections _]
+   (reduce (fn [acc collection]
+             (assoc acc (:slug collection) collection))
+           {}
+           (vals collections))))
+
+;; Enhanced collections with document stats
+(rf/reg-sub
+ :data/collections-with-stats
+ :<- [:data/collections-by-slug]
+ :<- [:data/documents]
+ (fn [[collections-by-slug documents] _]
+   (let [;; Group documents by collection ID
+         documents-by-collection-id (group-by :document_collection_id (vals documents))]
+     (reduce (fn [acc [slug collection]]
+               (let [collection-docs (get documents-by-collection-id (:id collection) [])
+                     total-docs (count collection-docs)
+                     ready-docs (count (filter #(:ready %) collection-docs))
+                     all-ready? (and (> total-docs 0) (= ready-docs total-docs))]
+                 (assoc acc slug 
+                        (assoc collection 
+                               :total-documents total-docs
+                               :ready-documents ready-docs
+                               :all-documents-ready? all-ready?))))
+             {}
+             collections-by-slug))))
+
+(rf/reg-sub
  :data/squads
  (fn [db _]
    (get-in db [:data :squads])))

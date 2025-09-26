@@ -840,3 +840,14 @@ img,video{
   --tw-text-opacity: 1;
   color: rgb(154 52 18 / var(--tw-text-opacity));
 }
+
+/* Custom classes for collection path indicators */
+.collection-with-path {
+  --tw-border-opacity: 1;
+  border: 2px solid rgb(59 130 246 / var(--tw-border-opacity)) !important;
+}
+
+.collection-without-path {
+  --tw-border-opacity: 1;
+  border: 2px solid rgb(156 163 175 / var(--tw-border-opacity)) !important;
+}

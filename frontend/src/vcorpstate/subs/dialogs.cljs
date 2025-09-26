@@ -12,6 +12,20 @@
    (get-in db [:dialogs :role-counts] {})))
 
 ;; ====================================
+;; DOCUMENT DIALOG SUBSCRIPTIONS
+;; ====================================
+
+(rf/reg-sub
+ :document-dialog-open?
+ (fn [db _]
+   (get-in db [:dialogs :document-open?])))
+
+(rf/reg-sub
+ :selected-document
+ (fn [db _]
+   (get-in db [:dialogs :selected-document])))
+
+;; ====================================
 ;; CREATE PROJECT DIALOG SUBSCRIPTIONS
 ;; ====================================
 

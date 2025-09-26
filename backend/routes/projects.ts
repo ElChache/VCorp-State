@@ -8,11 +8,13 @@ import {
 import { PROJECT_TEMPLATES } from '../templates/project-templates.js';
 import { JOB_TEMPLATES } from '../templates/jobs.js';
 import { ProjectSeedingService } from '../services/project-seeding.js';
+import { FileWatcherService } from '../services/file-watcher/index.js';
 import * as fs from 'fs';
 import { join } from 'path';
 
 export function createProjectRoutes(
-  seedingService: ProjectSeedingService
+  seedingService: ProjectSeedingService,
+  fileWatcher?: FileWatcherService
 ): Router {
   const router = Router();
   const prisma = new PrismaClient();
@@ -166,15 +168,15 @@ export function createProjectRoutes(
 
       // Create project directory structure
       try {
-        const agentsWorkspacePath = join(result.project.path, 'agents_workspaces');
+        const agentsWorkspacePath = join(result.project.path, 'agent_workspaces');
         const initialDocsPath = join(result.project.path, 'initial-docs');
         
-        // Create agents_workspaces folder
+        // Create agent_workspaces folder
         if (!fs.existsSync(agentsWorkspacePath)) {
           fs.mkdirSync(agentsWorkspacePath, { recursive: true });
-          console.log(`✅ Created agents_workspaces folder at: ${agentsWorkspacePath}`);
+          console.log(`✅ Created agent_workspaces folder at: ${agentsWorkspacePath}`);
         } else {
-          console.log(`📁 agents_workspaces folder already exists at: ${agentsWorkspacePath}`);
+          console.log(`📁 agent_workspaces folder already exists at: ${agentsWorkspacePath}`);
         }
 
         // Create initial-docs folder
@@ -192,6 +194,19 @@ export function createProjectRoutes(
       // Seed project with document collections for graph structure
       // This is done outside the transaction as it's a separate concern
       await seedingService.seedProjectGraph(result.project.id, template.jobs);
+      
+      // Start file watcher for the new project
+      if (fileWatcher) {
+        try {
+          await fileWatcher.startWatching({
+            projectId: result.project.id,
+            projectPath: result.project.path
+          });
+        } catch (watcherError) {
+          console.error(`⚠️  Failed to start file watcher for project ${result.project.id}:`, watcherError);
+          // Don't fail project creation if file watcher fails to start
+        }
+      }
       
       res.status(201).json({
         project: {
