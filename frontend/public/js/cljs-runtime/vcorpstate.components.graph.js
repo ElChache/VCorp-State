@@ -22,10 +22,10 @@ return "collection-without-path";
  */
 vcorpstate.components.graph.render_job_level = (function vcorpstate$components$graph$render_job_level(jobs_map,jobs_by_slug,collections_by_slug,level){
 if(cljs.core.truth_(cljs.core.not_empty(jobs_map))){
-return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"mb-4"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"class","class",-2030961996),"flex justify-center",new cljs.core.Keyword(null,"style","style",-496642736),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"gap","gap",80255254),"0.5rem"], null)], null),cljs.core.map.cljs$core$IFn$_invoke$arity$2((function (p__12574){
-var vec__12575 = p__12574;
-var job_slug = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12575,(0),null);
-var _children = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12575,(1),null);
+return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"mb-4"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"class","class",-2030961996),"flex justify-center",new cljs.core.Keyword(null,"style","style",-496642736),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"gap","gap",80255254),"0.5rem"], null)], null),cljs.core.map.cljs$core$IFn$_invoke$arity$2((function (p__12622){
+var vec__12624 = p__12622;
+var job_slug = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12624,(0),null);
+var _children = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__12624,(1),null);
 var job = cljs.core.get.cljs$core$IFn$_invoke$arity$2(jobs_by_slug,job_slug);
 return cljs.core.with_meta(new cljs.core.PersistentVector(null, 5, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"flex flex-col items-center"], null),(cljs.core.truth_((function (){var and__5000__auto__ = cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(level,(0));
 if(and__5000__auto__){
@@ -71,10 +71,10 @@ return null;
  * Renders a single squad column with title and jobs
  */
 vcorpstate.components.graph.squad_column = (function vcorpstate$components$graph$squad_column(squad_data){
-var map__12578 = squad_data;
-var map__12578__$1 = cljs.core.__destructure_map(map__12578);
-var squad = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__12578__$1,new cljs.core.Keyword(null,"squad","squad",1623679812));
-var jobs = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__12578__$1,new cljs.core.Keyword(null,"jobs","jobs",-313607120));
+var map__12641 = squad_data;
+var map__12641__$1 = cljs.core.__destructure_map(map__12641);
+var squad = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__12641__$1,new cljs.core.Keyword(null,"squad","squad",1623679812));
+var jobs = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__12641__$1,new cljs.core.Keyword(null,"jobs","jobs",-313607120));
 return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"flex-shrink-0 min-w-0 mx-2"], null),new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"bg-white border border-gray-200 rounded-lg shadow-sm min-h-96"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"px-3 py-2 border-b border-gray-100"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"h3","h3",2067611163),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"text-xs font-medium text-gray-400 uppercase tracking-wide"], null),[cljs.core.str.cljs$core$IFn$_invoke$arity$1(squad)," Squad"].join('')], null)], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"p-3"], null),(function (){var jobs_by_slug = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","jobs-by-slug","data/jobs-by-slug",413201112)], null)));
 var collections_with_stats = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","collections-with-stats","data/collections-with-stats",-2075916159)], null)));
 return new cljs.core.PersistentVector(null, 5, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.graph.render_job_level,jobs,jobs_by_slug,collections_with_stats,(0)], null);

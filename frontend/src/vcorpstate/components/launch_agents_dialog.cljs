@@ -18,6 +18,39 @@
                 :on-click #(rf/dispatch [:update-role-count (:short_name role) (inc count)])}
        "+"]]]))
 
+(defn agent-role-list
+  "List of agent roles with counters"
+  [roles role-counts]
+  [:div {:class "border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto"}
+   (if (seq roles)
+     (for [role (vals roles)]
+       ^{:key (:short_name role)}
+       [role-counter-row role role-counts])
+     [:div {:class "text-gray-500 text-center py-8 px-4"} "Loading roles..."])])
+
+(defn dialog-buttons
+  "Cancel and Launch buttons for the dialog"
+  []
+  [:div {:style {:display "flex" :justify-content "flex-end" :gap "12px" :margin-top "20px"}}
+   [:button {:style {:padding "12px 24px" :background-color "#f3f4f6" :color "#374151" :border "1px solid #d1d5db" :border-radius "8px" :cursor "pointer" :font-size "14px" :font-weight "500" :font-family "system-ui"}
+             :on-click #(rf/dispatch [:hide-launch-agents-dialog])}
+    "Cancel"]
+   [:button {:style {:padding "12px 24px" :background-color "#3b82f6" :color "#ffffff" :border "1px solid #3b82f6" :border-radius "8px" :cursor "pointer" :font-size "14px" :font-weight "500" :font-family "system-ui"}
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (.stopPropagation e)
+                         (rf/dispatch [:launch-agents]))}
+    "Launch"]])
+
+(defn dialog-content
+  "Main dialog content container"
+  [roles role-counts]
+  [:div {:style {:background-color "white" :border-radius "8px" :box-shadow "0 25px 50px -12px rgba(0, 0, 0, 0.25)" :padding "24px" :max-width "500px" :width "100%" :margin "16px" :max-height "80vh" :overflow-y "auto"}
+         :on-click (fn [e] (.stopPropagation e))}
+   [:div {:class "mb-6"}
+    [agent-role-list roles role-counts]]
+   [dialog-buttons]])
+
 (defn launch-agents-dialog
   "Dialog for launching agents"
   []
@@ -27,21 +60,4 @@
     (when is-open?
       [:div {:style {:position "fixed" :top "0" :left "0" :width "100%" :height "100%" :background-color "rgba(0,0,0,0.5)" :z-index "9999" :display "flex" :align-items "center" :justify-content "center"}
              :on-click #(rf/dispatch [:hide-launch-agents-dialog])}
-       [:div {:style {:background-color "white" :border-radius "8px" :box-shadow "0 25px 50px -12px rgba(0, 0, 0, 0.25)" :padding "24px" :max-width "500px" :width "100%" :margin "16px" :max-height "80vh" :overflow-y "auto"}
-              :on-click (fn [e] (.stopPropagation e))}
-        
-        [:div {:class "mb-6"}
-         [:div {:class "border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto"}
-          (if (seq roles)
-            (for [role (vals roles)]
-              ^{:key (:short_name role)}
-              [role-counter-row role role-counts])
-            [:div {:class "text-gray-500 text-center py-8 px-4"} "Loading roles..."])]]
-        
-        [:div {:style {:display "flex" :justify-content "flex-end" :gap "12px" :margin-top "20px"}}
-         [:button {:style {:padding "12px 24px" :background-color "#f3f4f6" :color "#374151" :border "1px solid #d1d5db" :border-radius "8px" :cursor "pointer" :font-size "14px" :font-weight "500" :font-family "system-ui"}
-                   :on-click #(rf/dispatch [:hide-launch-agents-dialog])}
-          "Cancel"]
-         [:button {:style {:padding "12px 24px" :background-color "#3b82f6" :color "#ffffff" :border "1px solid #3b82f6" :border-radius "8px" :cursor "pointer" :font-size "14px" :font-weight "500" :font-family "system-ui"}
-                   :on-click #(rf/dispatch [:launch-agents])}
-          "Launch"]]]])))
+       [dialog-content roles role-counts]])))

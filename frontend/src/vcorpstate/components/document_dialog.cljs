@@ -9,7 +9,7 @@
   "Calculate overall collection status based on document statuses"
   [documents]
   (if (and (seq documents) 
-           (every? #(= (:status %) "ready") documents))
+           (every? #(:ready %) documents))
     "ready"
     "not ready"))
 
@@ -25,15 +25,22 @@
      (if is-ready? "Ready" "Not Ready")]))
 
 (defn- documents-table
-  "Table showing all documents in the collection with their status"
+  "Table showing all documents in the collection with their status and action buttons"
   [documents]
   (let [columns [{:key :slug :label "Document"}
-                 {:key :status :label "Status"}]
+                 {:key :status :label "Status"}
+                 {:key :actions :label "Actions"}]
         render-cell (fn [column-key row-data]
                       (case column-key
                         :slug [:span {:class "font-medium text-gray-900"} (:slug row-data)]
-                        :status [pill/status-pill {:document-slug (:slug row-data)
-                                                   :status (or (:status row-data) "not ready")}]))]
+                        :status [pill/status-badge {:status (if (:ready row-data) "ready" "not ready")}]
+                        :actions [:div {:class "flex gap-3"}
+                                  [:button {:class "px-4 py-2 text-sm font-medium text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 shadow-sm"
+                                            :on-click #(rf/dispatch [:set-document-status (:id row-data) true])}
+                                   "Set Ready"]
+                                  [:button {:class "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transition-all duration-200 shadow-sm"
+                                            :on-click #(rf/dispatch [:set-document-status (:id row-data) false])}
+                                   "Set Not Ready"]]))]
     [table/data-table {:data documents
                        :columns columns
                        :render-cell render-cell

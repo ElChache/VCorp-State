@@ -8,8 +8,6 @@ e.preventDefault();
 
 e.stopPropagation();
 
-console.log("Launch button clicked!");
-
 return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"show-launch-agents-dialog","show-launch-agents-dialog",346664923)], null));
 })], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"span","span",1394872991),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"text-xl"], null),"\uD83D\uDE80"], null)], null);
 });

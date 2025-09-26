@@ -3,8 +3,8 @@ goog.provide('vcorpstate.components.document_dialog');
  * Calculate overall collection status based on document statuses
  */
 vcorpstate.components.document_dialog.calculate_collection_status = (function vcorpstate$components$document_dialog$calculate_collection_status(documents){
-if(((cljs.core.seq(documents)) && (cljs.core.every_QMARK_((function (p1__12571_SHARP_){
-return cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"status","status",-1997798413).cljs$core$IFn$_invoke$arity$1(p1__12571_SHARP_),"ready");
+if(((cljs.core.seq(documents)) && (cljs.core.every_QMARK_((function (p1__13529_SHARP_){
+return new cljs.core.Keyword(null,"ready","ready",1086465795).cljs$core$IFn$_invoke$arity$1(p1__13529_SHARP_);
 }),documents)))){
 return "ready";
 } else {
@@ -20,30 +20,32 @@ var classes = ["inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font
 return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"span","span",1394872991),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),classes], null),((is_ready_QMARK_)?"Ready":"Not Ready")], null);
 });
 /**
- * Table showing all documents in the collection with their status
+ * Table showing all documents in the collection with their status and action buttons
  */
 vcorpstate.components.document_dialog.documents_table = (function vcorpstate$components$document_dialog$documents_table(documents){
-var columns = new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"slug","slug",2029314850),new cljs.core.Keyword(null,"label","label",1718410804),"Document"], null),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"status","status",-1997798413),new cljs.core.Keyword(null,"label","label",1718410804),"Status"], null)], null);
+var columns = new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"slug","slug",2029314850),new cljs.core.Keyword(null,"label","label",1718410804),"Document"], null),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"status","status",-1997798413),new cljs.core.Keyword(null,"label","label",1718410804),"Status"], null),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"actions","actions",-812656882),new cljs.core.Keyword(null,"label","label",1718410804),"Actions"], null)], null);
 var render_cell = (function (column_key,row_data){
-var G__12572 = column_key;
-var G__12572__$1 = (((G__12572 instanceof cljs.core.Keyword))?G__12572.fqn:null);
-switch (G__12572__$1) {
+var G__13530 = column_key;
+var G__13530__$1 = (((G__13530 instanceof cljs.core.Keyword))?G__13530.fqn:null);
+switch (G__13530__$1) {
 case "slug":
 return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"span","span",1394872991),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"font-medium text-gray-900"], null),new cljs.core.Keyword(null,"slug","slug",2029314850).cljs$core$IFn$_invoke$arity$1(row_data)], null);
 
 break;
 case "status":
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.ui.status_pill.status_pill,new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"document-slug","document-slug",793339583),new cljs.core.Keyword(null,"slug","slug",2029314850).cljs$core$IFn$_invoke$arity$1(row_data),new cljs.core.Keyword(null,"status","status",-1997798413),(function (){var or__5002__auto__ = new cljs.core.Keyword(null,"status","status",-1997798413).cljs$core$IFn$_invoke$arity$1(row_data);
-if(cljs.core.truth_(or__5002__auto__)){
-return or__5002__auto__;
-} else {
-return "not ready";
-}
-})()], null)], null);
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.components.ui.status_pill.status_badge,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"status","status",-1997798413),(cljs.core.truth_(new cljs.core.Keyword(null,"ready","ready",1086465795).cljs$core$IFn$_invoke$arity$1(row_data))?"ready":"not ready")], null)], null);
+
+break;
+case "actions":
+return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"flex gap-3"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"button","button",1456579943),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"class","class",-2030961996),"px-4 py-2 text-sm font-medium text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 shadow-sm",new cljs.core.Keyword(null,"on-click","on-click",1632826543),(function (){
+return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"set-document-status","set-document-status",-2021797915),new cljs.core.Keyword(null,"id","id",-1388402092).cljs$core$IFn$_invoke$arity$1(row_data),true], null));
+})], null),"Set Ready"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"button","button",1456579943),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"class","class",-2030961996),"px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transition-all duration-200 shadow-sm",new cljs.core.Keyword(null,"on-click","on-click",1632826543),(function (){
+return re_frame.core.dispatch(new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"set-document-status","set-document-status",-2021797915),new cljs.core.Keyword(null,"id","id",-1388402092).cljs$core$IFn$_invoke$arity$1(row_data),false], null));
+})], null),"Set Not Ready"], null)], null);
 
 break;
 default:
-throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__12572__$1)].join('')));
+throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__13530__$1)].join('')));
 
 }
 });

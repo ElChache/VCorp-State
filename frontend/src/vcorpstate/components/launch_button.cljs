@@ -9,6 +9,5 @@
             :on-click (fn [e] 
                         (.preventDefault e)
                         (.stopPropagation e)
-                        (js/console.log "Launch button clicked!")
                         (rf/dispatch [:show-launch-agents-dialog]))}
    [:span {:class "text-xl"} "🚀"]])

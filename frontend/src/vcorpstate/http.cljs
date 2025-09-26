@@ -57,11 +57,11 @@
      :response-format (ajax/json-response-format {:keywords? true})}))
 
 (defn update-document-status
-  "Update document status (ready/not ready)"
-  [document-slug status]
-  (ajax/PUT (str api-base-url "/api/documents/" document-slug "/status")
-    {:params {:status status}
-     :handler #(rf/dispatch [:document/status-updated document-slug status %])
-     :error-handler #(rf/dispatch [:document/status-update-failed document-slug %])
+  "Update document ready status (boolean)"
+  [document-id ready?]
+  (ajax/PATCH (str api-base-url "/api/documents/" document-id "/ready")
+    {:params {:ready ready?}
+     :handler #(rf/dispatch [:document/status-updated document-id ready? %])
+     :error-handler #(rf/dispatch [:document/status-update-failed document-id %])
      :format (ajax/json-request-format)
      :response-format (ajax/json-response-format {:keywords? true})}))

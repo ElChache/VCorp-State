@@ -51,6 +51,7 @@
                      all-ready? (and (> total-docs 0) (= ready-docs total-docs))]
                  (assoc acc slug 
                         (assoc collection 
+                               :documents collection-docs
                                :total-documents total-docs
                                :ready-documents ready-docs
                                :all-documents-ready? all-ready?))))

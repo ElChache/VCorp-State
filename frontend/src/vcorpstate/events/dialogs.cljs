@@ -7,7 +7,6 @@
 (rf/reg-event-db
  :show-launch-agents-dialog
  (fn [db _]
-   (js/console.log "Opening launch agents dialog")
    (-> db
        (assoc-in [:dialogs :launch-agents-open?] true)
        (assoc-in [:dialogs :role-counts] {}))))
@@ -32,14 +31,18 @@
  :launch-agents
  (fn [{:keys [db]} _]
    (let [role-counts (get-in db [:dialogs :role-counts])
-         project-id (get-in db [:data :selected-project-id])
+         project-id (js/parseInt (or (get-in db [:route :params :id])
+                                      (get-in db [:data :selected-project-id]) 
+                                      (:selected-project-id db)
+                                      "1"))
          launch-requests (filter #(> (second %) 0) role-counts)]
-     (js/console.log "Launching agents:" (clj->js launch-requests) "for project:" project-id)
      (if (and project-id (seq launch-requests))
        {:db (-> db
                 (assoc-in [:dialogs :launching-agents?] true)
                 (assoc-in [:dialogs :agent-launch-results] [])
-                (assoc-in [:dialogs :agent-launch-error] nil))
+                (assoc-in [:dialogs :agent-launch-error] nil)
+                (assoc-in [:dialogs :launch-agents-open?] false)
+                (assoc-in [:dialogs :role-counts] {}))
         :dispatch-n (mapv (fn [[role count]]
                             [:http/launch-agents project-id role count])
                           launch-requests)}
@@ -56,9 +59,7 @@
 (rf/reg-event-db
  :agents/launch-success
  (fn [db [_ role response]]
-   (js/console.log "Agents launched successfully for role" role ":" (clj->js response))
-   (let [current-results (get-in db [:dialogs :agent-launch-results] [])
-         new-result {:role role :success true :response response}]
+   (let [new-result {:role role :success true :response response}]
      (-> db
          (update-in [:dialogs :agent-launch-results] conj new-result)
          (assoc-in [:dialogs :launching-agents?] false)))))
@@ -67,9 +68,7 @@
 (rf/reg-event-db
  :agents/launch-error
  (fn [db [_ role error]]
-   (js/console.error "Agent launch failed for role" role ":" (clj->js error))
-   (let [current-results (get-in db [:dialogs :agent-launch-results] [])
-         new-result {:role role :success false :error error}]
+   (let [new-result {:role role :success false :error error}]
      (-> db
          (update-in [:dialogs :agent-launch-results] conj new-result)
          (assoc-in [:dialogs :launching-agents?] false)
@@ -96,34 +95,31 @@
        (assoc-in [:dialogs :document-open?] false)
        (assoc-in [:dialogs :selected-document] nil))))
 
-;; Toggle document status
+;; Set document status directly
 (rf/reg-event-fx
- :toggle-document-status
- (fn [{:keys [db]} [_ document-slug]]
-   (let [current-status (get-in db [:data :documents-by-slug document-slug :status] "not ready")
-         new-status (if (= current-status "ready") "not ready" "ready")]
-     (js/console.log "Toggling document status for" document-slug "from" current-status "to" new-status)
-     {:dispatch [:http/update-document-status document-slug new-status]})))
+ :set-document-status
+ (fn [_ [_ document-id ready?]]
+   {:dispatch [:http/update-document-status document-id ready?]}))
 
 ;; HTTP event handler for updating document status
 (rf/reg-event-fx
  :http/update-document-status
- (fn [_ [_ document-slug status]]
-   (http/update-document-status document-slug status)
+ (fn [_ [_ document-id ready?]]
+   (http/update-document-status document-id ready?)
    {}))
 
 ;; Handle successful document status update
 (rf/reg-event-db
  :document/status-updated
- (fn [db [_ document-slug status response]]
-   (js/console.log "Document status updated successfully:" document-slug "to" status)
-   (assoc-in db [:data :documents-by-slug document-slug :status] status)))
+ (fn [db [_ _document-id _ready? _response]]
+   ;; Update by finding the document in the collections with matching ID
+   ;; The real-time WebSocket updates should handle this automatically
+   db))
 
 ;; Handle document status update failure
 (rf/reg-event-db
  :document/status-update-failed
- (fn [db [_ document-slug error]]
-   (js/console.error "Failed to update document status:" document-slug error)
+ (fn [db [_ _document-slug _error]]
    db))
 
 ;; ====================================
