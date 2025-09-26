@@ -50,7 +50,7 @@
   []
   (let [is-open? @(rf/subscribe [:document-dialog-open?])
         selected-document-slug @(rf/subscribe [:selected-document])
-        collections-by-slug @(rf/subscribe [:data/collections-by-slug])
+        collections-by-slug @(rf/subscribe [:data/collections-with-stats])
         collection (get collections-by-slug selected-document-slug)
         documents (when collection (:documents collection))
         collection-status (calculate-collection-status documents)]

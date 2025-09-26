@@ -8,9 +8,9 @@
   - on-backdrop-click: Function - handler for backdrop clicks
   - children: Vector - child components to render inside modal"
   [{:keys [on-backdrop-click]} & children]
-  [:div {:class "fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+  [:div {:class "dialog-overlay"
          :on-click on-backdrop-click}
-   (into [:div {:class "bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+   (into [:div {:class "dialog-modal"
                 :on-click (fn [e] (.stopPropagation e))}]
          children)])
 
@@ -32,8 +32,11 @@
   Props:
   - children: Vector - button components"
   [& children]
-  [:div {:class "flex justify-end gap-3 mt-6"}
-   children])
+  (into [:div {:class "flex justify-end gap-3 mt-6"}]
+        (map-indexed (fn [idx child]
+                       ^{:key (str "dialog-action-" idx)}
+                       child)
+                     children)))
 
 (defn dialog-button
   "Standard dialog button.

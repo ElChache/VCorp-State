@@ -3,8 +3,8 @@ goog.provide('vcorpstate.components.document_dialog');
  * Calculate overall collection status based on document statuses
  */
 vcorpstate.components.document_dialog.calculate_collection_status = (function vcorpstate$components$document_dialog$calculate_collection_status(documents){
-if(((cljs.core.seq(documents)) && (cljs.core.every_QMARK_((function (p1__12546_SHARP_){
-return cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"status","status",-1997798413).cljs$core$IFn$_invoke$arity$1(p1__12546_SHARP_),"ready");
+if(((cljs.core.seq(documents)) && (cljs.core.every_QMARK_((function (p1__12571_SHARP_){
+return cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"status","status",-1997798413).cljs$core$IFn$_invoke$arity$1(p1__12571_SHARP_),"ready");
 }),documents)))){
 return "ready";
 } else {
@@ -25,9 +25,9 @@ return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMP
 vcorpstate.components.document_dialog.documents_table = (function vcorpstate$components$document_dialog$documents_table(documents){
 var columns = new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"slug","slug",2029314850),new cljs.core.Keyword(null,"label","label",1718410804),"Document"], null),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"key","key",-1516042587),new cljs.core.Keyword(null,"status","status",-1997798413),new cljs.core.Keyword(null,"label","label",1718410804),"Status"], null)], null);
 var render_cell = (function (column_key,row_data){
-var G__12547 = column_key;
-var G__12547__$1 = (((G__12547 instanceof cljs.core.Keyword))?G__12547.fqn:null);
-switch (G__12547__$1) {
+var G__12572 = column_key;
+var G__12572__$1 = (((G__12572 instanceof cljs.core.Keyword))?G__12572.fqn:null);
+switch (G__12572__$1) {
 case "slug":
 return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"span","span",1394872991),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"font-medium text-gray-900"], null),new cljs.core.Keyword(null,"slug","slug",2029314850).cljs$core$IFn$_invoke$arity$1(row_data)], null);
 
@@ -43,7 +43,7 @@ return "not ready";
 
 break;
 default:
-throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__12547__$1)].join('')));
+throw (new Error(["No matching clause: ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(G__12572__$1)].join('')));
 
 }
 });
@@ -60,7 +60,7 @@ return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMP
 vcorpstate.components.document_dialog.document_dialog = (function vcorpstate$components$document_dialog$document_dialog(){
 var is_open_QMARK_ = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"document-dialog-open?","document-dialog-open?",-424640326)], null)));
 var selected_document_slug = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"selected-document","selected-document",-816807733)], null)));
-var collections_by_slug = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","collections-by-slug","data/collections-by-slug",806335528)], null)));
+var collections_by_slug = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword("data","collections-with-stats","data/collections-with-stats",-2075916159)], null)));
 var collection = cljs.core.get.cljs$core$IFn$_invoke$arity$2(collections_by_slug,selected_document_slug);
 var documents = (cljs.core.truth_(collection)?new cljs.core.Keyword(null,"documents","documents",-1582333455).cljs$core$IFn$_invoke$arity$1(collection):null);
 var collection_status = vcorpstate.components.document_dialog.calculate_collection_status(documents);
