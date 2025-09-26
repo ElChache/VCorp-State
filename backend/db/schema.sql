@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS jobs CASCADE;
 DROP TABLE IF EXISTS workflows CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
 DROP TABLE IF EXISTS squads CASCADE;
+DROP TABLE IF EXISTS agents CASCADE;
 DROP TABLE IF EXISTS projects CASCADE;
 
 -- Projects table
@@ -19,6 +20,21 @@ CREATE TABLE projects (
     github_origin VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Agents table (linked to projects and roles)
+CREATE TABLE agents (
+    id SERIAL PRIMARY KEY,
+    project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    slug VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    first_launched_at TIMESTAMP,
+    last_launched_at TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'idle', -- 'active', 'idle'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(project_id, slug),
+    FOREIGN KEY (project_id, role) REFERENCES roles(project_id, short_name)
 );
 
 -- Squads table (linked to projects)
@@ -73,7 +89,9 @@ CREATE TABLE jobs (
     workflow_slug VARCHAR(100) NOT NULL,
     inputs JSONB NOT NULL DEFAULT '[]',
     outputs JSONB NOT NULL DEFAULT '[]',
-    automated BOOLEAN NOT NULL DEFAULT true, -- If true, job completes automatically when outputs are produced
+    auto_start BOOLEAN NOT NULL DEFAULT true, -- If true, job starts automatically when inputs are ready
+    auto_complete BOOLEAN NOT NULL DEFAULT true, -- If true, job completes automatically when outputs are produced  
+    in_progress BOOLEAN NOT NULL DEFAULT false, -- If true, job is currently being processed
     completed BOOLEAN NOT NULL DEFAULT false,
     completed_at TIMESTAMP, -- When the job was completed
     last_processed_at TIMESTAMP, -- When the job last processed its input documents
@@ -105,7 +123,7 @@ CREATE TABLE documents (
     slug VARCHAR(100) NOT NULL,
     name VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    file_path VARCHAR(500) NOT NULL, -- Path to the mirrored file in the filesystem (e.g., '.vcorp/releases/mvp-release.md')
+    file_path VARCHAR(500), -- Path to the mirrored file in the filesystem (e.g., '.vcorp/releases/mvp-release.md')
     document_type VARCHAR(100) NOT NULL, -- e.g., 'release', 'feature', 'product_ticket'
     parent_document_id INTEGER REFERENCES documents(id) ON DELETE SET NULL,
     blocked_by JSONB NOT NULL DEFAULT '[]', -- Array of document slugs that block this document
@@ -140,6 +158,9 @@ CREATE TABLE job_document_snapshots (
 );
 
 -- Indexes for performance
+CREATE INDEX idx_agents_project_id ON agents(project_id);
+CREATE INDEX idx_agents_role ON agents(role);
+CREATE INDEX idx_agents_status ON agents(status);
 CREATE INDEX idx_squads_project_id ON squads(project_id);
 CREATE INDEX idx_roles_project_id ON roles(project_id);
 CREATE INDEX idx_roles_squad ON roles(project_id, squad_slug);
@@ -148,7 +169,9 @@ CREATE INDEX idx_jobs_project_id ON jobs(project_id);
 CREATE INDEX idx_jobs_workflow ON jobs(project_id, workflow_slug);
 CREATE INDEX idx_jobs_completed ON jobs(completed);
 CREATE INDEX idx_jobs_paused ON jobs(paused);
-CREATE INDEX idx_jobs_automated ON jobs(automated);
+CREATE INDEX idx_jobs_auto_start ON jobs(auto_start);
+CREATE INDEX idx_jobs_auto_complete ON jobs(auto_complete);
+CREATE INDEX idx_jobs_in_progress ON jobs(in_progress);
 CREATE INDEX idx_jobs_last_processed_at ON jobs(last_processed_at);
 CREATE INDEX idx_job_document_snapshots_job_id ON job_document_snapshots(job_id);
 CREATE INDEX idx_job_document_snapshots_document_id ON job_document_snapshots(document_id);
@@ -165,35 +188,3 @@ CREATE INDEX idx_documents_file_path ON documents(file_path);
 CREATE INDEX idx_documents_last_updated_at ON documents(last_updated_at);
 CREATE INDEX idx_projects_name ON projects(name);
 
--- Update triggers for updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_squads_updated_at BEFORE UPDATE ON squads
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_roles_updated_at BEFORE UPDATE ON roles
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_workflows_updated_at BEFORE UPDATE ON workflows
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_jobs_updated_at BEFORE UPDATE ON jobs
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_document_collections_updated_at BEFORE UPDATE ON document_collections
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_documents_updated_at BEFORE UPDATE ON documents
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_job_document_snapshots_updated_at BEFORE UPDATE ON job_document_snapshots
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

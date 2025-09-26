@@ -125,6 +125,20 @@ GET /api/collections/:id/details      # Collection with documents and progress
 GET /api/jobs/:id/details            # Job details with execution info
 ```
 
+### Agents
+```bash
+POST /api/agents/launch               # Launch agents for a project
+```
+
+**Launch Agents Request:**
+```json
+{
+  "projectId": 123,
+  "role": "fe",         // Role short_name (e.g., "fe", "be", "ai")
+  "count": 2            // Number of agents to create (1-10)
+}
+```
+
 ### Testing & Development
 ```bash
 POST /api/test/emit-event              # Emit test real-time event

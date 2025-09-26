@@ -1,0 +1,376 @@
+import chokidar from 'chokidar';
+import path from 'path';
+import fs from 'fs/promises';
+import { DatabaseService } from './database.js';
+import { RealTimeEventService } from './real-time-events.js';
+
+export interface FileWatcherConfig {
+  projectId: number;
+  projectPath: string;
+  agentWorkspacesPath?: string;
+}
+
+export class FileWatcherService {
+  private watchers: Map<string, chokidar.FSWatcher> = new Map();
+  private db: DatabaseService;
+  private realTimeEvents: RealTimeEventService;
+  private projectConfigs: Map<number, FileWatcherConfig> = new Map();
+
+  constructor(db: DatabaseService, realTimeEvents: RealTimeEventService) {
+    this.db = db;
+    this.realTimeEvents = realTimeEvents;
+  }
+
+  /**
+   * Start watching a project's agent workspaces
+   */
+  async startWatching(config: FileWatcherConfig): Promise<void> {
+    const { projectId, projectPath, agentWorkspacesPath } = config;
+    
+    // Default agent workspaces path
+    const workspacesPath = agentWorkspacesPath || path.join(projectPath, 'agent_workspaces');
+    
+    // Check if workspaces directory exists
+    try {
+      await fs.access(workspacesPath);
+    } catch (error) {
+      console.log(`📁 Agent workspaces directory does not exist yet: ${workspacesPath}`);
+      // Create the directory to watch for future additions
+      try {
+        await fs.mkdir(workspacesPath, { recursive: true });
+        console.log(`📁 Created agent workspaces directory: ${workspacesPath}`);
+      } catch (createError) {
+        console.error(`❌ Failed to create workspaces directory: ${createError}`);
+        return;
+      }
+    }
+
+    // Store project config
+    this.projectConfigs.set(projectId, { ...config, agentWorkspacesPath: workspacesPath });
+
+    // Stop existing watcher for this project if any
+    await this.stopWatching(projectId);
+
+    console.log(`👁️  Starting file watcher for project ${projectId} at: ${workspacesPath}`);
+
+    // Create watcher for agent workspaces
+    const watcher = chokidar.watch(workspacesPath, {
+      ignored: /(^|[\/\\])\../, // ignore dotfiles
+      persistent: true,
+      depth: 10, // watch nested folders
+      ignoreInitial: false // process existing files/folders
+    });
+
+    // Handle folder creation (agent workspace folders)
+    watcher.on('addDir', async (dirPath: string) => {
+      await this.handleDirectoryAdded(projectId, workspacesPath, dirPath);
+    });
+
+    // Handle folder rename (via unlink + add)
+    watcher.on('unlinkDir', async (dirPath: string) => {
+      await this.handleDirectoryRemoved(projectId, workspacesPath, dirPath);
+    });
+
+    // Handle file creation
+    watcher.on('add', async (filePath: string) => {
+      await this.handleFileAdded(projectId, workspacesPath, filePath);
+    });
+
+    // Handle file removal
+    watcher.on('unlink', async (filePath: string) => {
+      await this.handleFileRemoved(projectId, workspacesPath, filePath);
+    });
+
+    // Handle watcher errors
+    watcher.on('error', (error) => {
+      console.error(`❌ File watcher error for project ${projectId}:`, error);
+    });
+
+    watcher.on('ready', () => {
+      console.log(`✅ File watcher ready for project ${projectId}`);
+    });
+
+    // Store watcher
+    this.watchers.set(`project-${projectId}`, watcher);
+  }
+
+  /**
+   * Stop watching a project
+   */
+  async stopWatching(projectId: number): Promise<void> {
+    const watcherKey = `project-${projectId}`;
+    const existingWatcher = this.watchers.get(watcherKey);
+    
+    if (existingWatcher) {
+      await existingWatcher.close();
+      this.watchers.delete(watcherKey);
+      this.projectConfigs.delete(projectId);
+      console.log(`🛑 Stopped file watcher for project ${projectId}`);
+    }
+  }
+
+  /**
+   * Handle directory addition (agent workspace folder)
+   */
+  private async handleDirectoryAdded(projectId: number, workspacesPath: string, dirPath: string): Promise<void> {
+    try {
+      // Skip if this is the root workspaces directory itself
+      if (dirPath === workspacesPath) {
+        return;
+      }
+
+      // Extract agent ID and folder name from path
+      const relativePath = path.relative(workspacesPath, dirPath);
+      const pathParts = relativePath.split(path.sep);
+      
+      // Skip if not a direct child of agent workspaces (agent_workspaces/{agent_id}/folder)
+      if (pathParts.length !== 2) {
+        return;
+      }
+
+      const [agentId, folderName] = pathParts;
+      const slug = this.sanitizeSlug(folderName);
+
+      console.log(`📂 New agent workspace folder detected: ${agentId}/${folderName}`);
+
+      // Check if document collection already exists
+      const existingCollection = await this.findDocumentCollectionBySlug(projectId, slug);
+      
+      if (!existingCollection) {
+        // Create new document collection
+        await this.createDocumentCollection(projectId, slug, folderName, dirPath);
+        console.log(`✅ Created document collection: ${slug}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error handling directory addition: ${dirPath}`, error);
+    }
+  }
+
+  /**
+   * Handle directory removal (for rename detection)
+   */
+  private async handleDirectoryRemoved(projectId: number, workspacesPath: string, dirPath: string): Promise<void> {
+    try {
+      const relativePath = path.relative(workspacesPath, dirPath);
+      const pathParts = relativePath.split(path.sep);
+      
+      if (pathParts.length !== 2) {
+        return;
+      }
+
+      const [, folderName] = pathParts;
+      const slug = this.sanitizeSlug(folderName);
+
+      console.log(`📂 Agent workspace folder removed: ${folderName}`);
+
+      // Note: We don't automatically delete document collections on folder removal
+      // as they might contain important data. This should be handled manually or
+      // via a separate cleanup process.
+    } catch (error) {
+      console.error(`❌ Error handling directory removal: ${dirPath}`, error);
+    }
+  }
+
+  /**
+   * Handle file addition
+   */
+  private async handleFileAdded(projectId: number, workspacesPath: string, filePath: string): Promise<void> {
+    try {
+      const relativePath = path.relative(workspacesPath, filePath);
+      const pathParts = relativePath.split(path.sep);
+      
+      // Must be under agent_workspaces/{agent_id}/{folder}/file
+      if (pathParts.length < 3) {
+        return;
+      }
+
+      const [agentId, folderName] = pathParts;
+      const fileName = path.basename(filePath);
+      const folderSlug = this.sanitizeSlug(folderName);
+      const fileSlug = this.sanitizeSlug(path.parse(fileName).name);
+
+      console.log(`📄 New file detected: ${agentId}/${folderName}/${fileName}`);
+
+      // Ensure document collection exists
+      let collection = await this.findDocumentCollectionBySlug(projectId, folderSlug);
+      
+      if (!collection) {
+        const folderPath = path.join(workspacesPath, agentId, folderName);
+        collection = await this.createDocumentCollection(projectId, folderSlug, folderName, folderPath);
+        console.log(`✅ Created document collection for new file: ${folderSlug}`);
+      }
+
+      // Check if document already exists
+      const existingDocument = await this.findDocumentBySlug(projectId, fileSlug);
+      
+      if (!existingDocument) {
+        // Read file content
+        const content = await this.readFileContent(filePath);
+        
+        // Create new document
+        await this.createDocument(projectId, collection.id, fileSlug, fileName, content, filePath);
+        console.log(`✅ Created document: ${fileSlug}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error handling file addition: ${filePath}`, error);
+    }
+  }
+
+  /**
+   * Handle file removal
+   */
+  private async handleFileRemoved(projectId: number, workspacesPath: string, filePath: string): Promise<void> {
+    try {
+      const fileName = path.basename(filePath);
+      const fileSlug = this.sanitizeSlug(path.parse(fileName).name);
+
+      console.log(`📄 File removed: ${fileName}`);
+
+      // Note: We don't automatically delete documents on file removal
+      // as they might contain important processing history. This should be 
+      // handled manually or via a separate cleanup process.
+    } catch (error) {
+      console.error(`❌ Error handling file removal: ${filePath}`, error);
+    }
+  }
+
+  /**
+   * Find document collection by slug
+   */
+  private async findDocumentCollectionBySlug(projectId: number, slug: string) {
+    try {
+      const collection = await this.db.transaction(async (prisma) => {
+        return await prisma.documentCollection.findFirst({
+          where: {
+            project_id: projectId,
+            slug: slug
+          }
+        });
+      });
+      
+      return collection;
+    } catch (error) {
+      console.error(`❌ Error finding document collection by slug: ${slug}`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Find document by slug
+   */
+  private async findDocumentBySlug(projectId: number, slug: string) {
+    try {
+      const document = await this.db.transaction(async (prisma) => {
+        return await prisma.document.findFirst({
+          where: {
+            project_id: projectId,
+            slug: slug
+          }
+        });
+      });
+      
+      return document;
+    } catch (error) {
+      console.error(`❌ Error finding document by slug: ${slug}`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Create document collection
+   */
+  private async createDocumentCollection(projectId: number, slug: string, name: string, folderPath: string) {
+    return await this.db.transaction(async (prisma) => {
+      return await prisma.documentCollection.create({
+        data: {
+          project_id: projectId,
+          slug: slug,
+          name: name,
+          description: `Auto-generated from agent workspace folder: ${folderPath}`,
+          document_type: 'agent_workspace'
+        }
+      });
+    });
+  }
+
+  /**
+   * Create document
+   */
+  private async createDocument(
+    projectId: number, 
+    collectionId: number, 
+    slug: string, 
+    name: string, 
+    content: string,
+    filePath: string
+  ) {
+    return await this.db.transaction(async (prisma) => {
+      return await prisma.document.create({
+        data: {
+          project_id: projectId,
+          document_collection_id: collectionId,
+          slug: slug,
+          name: name,
+          content: content,
+          file_path: filePath,
+          document_type: 'file',
+          status: 'ready'
+        }
+      });
+    });
+  }
+
+  /**
+   * Read file content safely
+   */
+  private async readFileContent(filePath: string): Promise<string> {
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      return content;
+    } catch (error) {
+      console.error(`❌ Error reading file: ${filePath}`, error);
+      return `Error reading file: ${error}`;
+    }
+  }
+
+  /**
+   * Sanitize string to be used as a database slug
+   */
+  private sanitizeSlug(input: string): string {
+    return input
+      .toLowerCase()
+      .replace(/[^a-z0-9-_]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 90); // Keep within DB limits
+  }
+
+  /**
+   * Get watching status for a project
+   */
+  isWatching(projectId: number): boolean {
+    return this.watchers.has(`project-${projectId}`);
+  }
+
+  /**
+   * Get all watched projects
+   */
+  getWatchedProjects(): number[] {
+    return Array.from(this.projectConfigs.keys());
+  }
+
+  /**
+   * Clean up all watchers
+   */
+  async close(): Promise<void> {
+    console.log('🛑 Closing all file watchers...');
+    
+    for (const [key, watcher] of this.watchers.entries()) {
+      await watcher.close();
+      console.log(`✅ Closed watcher: ${key}`);
+    }
+    
+    this.watchers.clear();
+    this.projectConfigs.clear();
+  }
+}

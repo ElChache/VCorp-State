@@ -98,7 +98,9 @@ export class GraphService {
         j.name,
         j.description,
         j.role,
-        j.automated,
+        j.auto_start,
+        j.auto_complete,
+        j.in_progress,
         j.completed,
         j.paused,
         j.completed_at,
@@ -128,7 +130,9 @@ export class GraphService {
           role: job.role,
           squad: job.squad_name || 'Unknown Squad',
           status,
-          automated: job.automated,
+          auto_start: job.auto_start,
+          auto_complete: job.auto_complete,
+          in_progress: job.in_progress,
           duration: this.calculateJobDuration(job)
         }
       };

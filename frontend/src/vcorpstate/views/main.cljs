@@ -29,7 +29,7 @@
          [:div {:class "text-center py-8"}
           [:p {:class "text-gray-600 mb-6"} "No projects found."]
           [:button {:class "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
-                    :on-click #(js/alert "Create project functionality coming soon!")}
+                    :on-click #(rf/dispatch [:show-create-project-dialog])}
            "Create New Project"]]
          
          :else
@@ -65,7 +65,7 @@
             "Select Project"]
            
            [:button {:class "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
-                     :on-click #(js/alert "Create project functionality coming soon!")}
+                     :on-click #(rf/dispatch [:show-create-project-dialog])}
             "Create New Project"]]])]]]))
 
 (defn main-section []

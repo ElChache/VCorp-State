@@ -4,16 +4,19 @@ import cors from 'cors';
 import { Pool } from 'pg';
 
 // Services
-import { PrismaDatabaseService } from './services/prisma-database.js';
+import { DatabaseService } from './services/database.js';
 import { RealTimeEventService } from './services/real-time-events.js';
-import { PrismaProjectSeedingService } from './services/prisma-project-seeding.js';
+import { ProjectSeedingService } from './services/project-seeding.js';
+import { FileWatcherService } from './services/file-watcher/index.js';
 
 // Routes
 import { createHealthRoutes } from './routes/health.js';
 import { createDataRoutes } from './routes/data.js';
 import { createTestingRoutes } from './routes/testing.js';
 import { createTemplateRoutes } from './routes/templates.js';
-import { createPrismaProjectRoutes } from './routes/prisma-projects.js';
+import { createProjectRoutes } from './routes/projects.js';
+import { createFileWatcherRoutes } from './routes/file-watcher.js';
+import agentsRoutes from './routes/agents.js';
 
 const app = express();
 const port = process.env.BACKEND_PORT || process.env.PORT || 3001;
@@ -23,9 +26,10 @@ const connectionString = process.env.DATABASE_URL ||
   `postgresql://${process.env.POSTGRES_USER || 'vcorp'}:${process.env.POSTGRES_PASSWORD || 'vcorp123'}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || 5432}/${process.env.POSTGRES_DB || 'vcorpstate'}`;
 
 // Initialize services
-const db = new PrismaDatabaseService();
+const db = new DatabaseService();
 const realTimeEvents = new RealTimeEventService(connectionString, wsPort);
-const seedingService = new PrismaProjectSeedingService();
+const seedingService = new ProjectSeedingService();
+const fileWatcher = new FileWatcherService(db, realTimeEvents);
 
 // Middleware
 app.use(cors({
@@ -39,7 +43,9 @@ app.use(createHealthRoutes(realTimeEvents));
 app.use(createDataRoutes(db));
 app.use(createTestingRoutes(db, realTimeEvents));
 app.use(createTemplateRoutes());
-app.use(createPrismaProjectRoutes(seedingService));
+app.use(createProjectRoutes(seedingService));
+app.use('/api/file-watcher', createFileWatcherRoutes(fileWatcher, db));
+app.use('/api/agents', agentsRoutes);
 
 // Server startup & shutdown
 async function startServer() {
@@ -66,6 +72,7 @@ async function startServer() {
 // Graceful shutdown
 const shutdown = async () => {
   console.log('🛑 Shutting down gracefully...');
+  await fileWatcher.close();
   await realTimeEvents.close();
   await db.close();
   process.exit(0);

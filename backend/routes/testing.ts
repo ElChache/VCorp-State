@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
-import { PrismaDatabaseService } from '../services/prisma-database.js';
+import { DatabaseService } from '../services/database.js';
 import { RealTimeEventService } from '../services/real-time-events.js';
 
 export function createTestingRoutes(
-  db: PrismaDatabaseService, 
+  db: DatabaseService, 
   realTimeEvents: RealTimeEventService
 ): Router {
   const router = Router();

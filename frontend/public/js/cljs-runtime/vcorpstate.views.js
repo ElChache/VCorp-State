@@ -1,9 +1,9 @@
 goog.provide('vcorpstate.views');
 vcorpstate.views.app = (function vcorpstate$views$app(){
 var current_view = cljs.core.deref(re_frame.core.subscribe.cljs$core$IFn$_invoke$arity$1(new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"current-view","current-view",-1037279042)], null)));
-return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),(function (){var G__12405 = current_view;
-var G__12405__$1 = (((G__12405 instanceof cljs.core.Keyword))?G__12405.fqn:null);
-switch (G__12405__$1) {
+return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),(function (){var G__12593 = current_view;
+var G__12593__$1 = (((G__12593 instanceof cljs.core.Keyword))?G__12593.fqn:null);
+switch (G__12593__$1) {
 case "main":
 return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [vcorpstate.views.project_main.project_main_view], null);
 

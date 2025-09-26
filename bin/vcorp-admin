@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+// VCorp Admin Command
+// Usage: vcorp-admin --agent-id=<id>
+
+const args = process.argv.slice(2);
+let agentId = null;
+
+// Parse arguments
+for (const arg of args) {
+  if (arg.startsWith('--agent-id=')) {
+    agentId = arg.split('=')[1];
+    break;
+  }
+}
+
+// Validate agent ID is provided
+if (!agentId) {
+  console.error('❌ Error: Agent ID is required');
+  console.error('Usage: vcorp-admin --agent-id=<id>');
+  process.exit(1);
+}
+
+// Show welcome message
+console.log('Welcome to VCorp');
+console.log(`Agent ID: ${agentId}`);

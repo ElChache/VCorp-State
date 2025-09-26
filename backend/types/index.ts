@@ -113,7 +113,9 @@ export interface Job {
   workflow_slug: string;
   inputs: JobInput[];
   outputs: JobOutput[];
-  automated: boolean; // If true, job completes automatically when outputs are produced
+  auto_start: boolean; // If true, job starts automatically when inputs are ready
+  auto_complete: boolean; // If true, job completes automatically when outputs are produced
+  in_progress: boolean; // If true, job is currently being processed
   completed: boolean;
   completed_at?: string; // When the job was completed
   last_processed_at?: string; // When the job last processed its input documents
@@ -254,7 +256,9 @@ export interface JobNode extends GraphNode {
     squad: string;
     status: 'waiting' | 'running' | 'completed' | 'paused';
     agent?: AgentInfo;
-    automated: boolean;
+    auto_start: boolean;
+    auto_complete: boolean;
+    in_progress: boolean;
     duration?: string;
   };
 }
@@ -266,6 +270,21 @@ export interface DocumentSummary {
   status: 'blocked' | 'ready' | 'in_progress' | 'done';
   assigned_to_role?: string;
   picked_by_agent_id?: string;
+}
+
+export interface Agent {
+  slug: string;
+  role: string;
+  status: string; // 'idle', 'active'
+  first_launched_at?: string;
+  last_launched_at?: string;
+}
+
+export interface DatabaseAgent extends Agent {
+  id: number;
+  project_id: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AgentInfo {

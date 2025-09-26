@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
-import { PrismaDatabaseService } from '../services/prisma-database.js';
+import { DatabaseService } from '../services/database.js';
 
-export function createDataRoutes(db: PrismaDatabaseService): Router {
+export function createDataRoutes(db: DatabaseService): Router {
   const router = Router();
 
   // Get complete initial data for a project (single API call)

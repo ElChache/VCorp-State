@@ -2,6 +2,50 @@
 -- These triggers emit NOTIFY events when key data changes occur
 
 -- =====================================================
+-- UPDATED_AT TRIGGERS
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_projects_updated_at ON projects;
+CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_squads_updated_at ON squads;
+CREATE TRIGGER update_squads_updated_at BEFORE UPDATE ON squads
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_roles_updated_at ON roles;
+CREATE TRIGGER update_roles_updated_at BEFORE UPDATE ON roles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_workflows_updated_at ON workflows;
+CREATE TRIGGER update_workflows_updated_at BEFORE UPDATE ON workflows
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_jobs_updated_at ON jobs;
+CREATE TRIGGER update_jobs_updated_at BEFORE UPDATE ON jobs
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_document_collections_updated_at ON document_collections;
+CREATE TRIGGER update_document_collections_updated_at BEFORE UPDATE ON document_collections
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_documents_updated_at ON documents;
+CREATE TRIGGER update_documents_updated_at BEFORE UPDATE ON documents
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_job_document_snapshots_updated_at ON job_document_snapshots;
+CREATE TRIGGER update_job_document_snapshots_updated_at BEFORE UPDATE ON job_document_snapshots
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
 -- DOCUMENT STATUS CHANGES
 -- =====================================================
 

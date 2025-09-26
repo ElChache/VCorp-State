@@ -22,7 +22,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Collection of feature documents describing specific product capabilities'
       }
     ],
-    automated: false, // Requires manual approval
+    auto_start: false, // Requires manual start
+    auto_complete: false, // Requires manual approval
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false
   },
@@ -45,7 +47,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Collection of product tickets defining specific user-facing functionality'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -68,7 +72,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Enhanced product tickets with technical contracts enabling parallel development'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -91,7 +97,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Frontend tickets with UI/UX specifications and API integration details'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -114,7 +122,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Backend tickets with API specifications and database requirements'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -137,7 +147,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'AI tickets with ML model specifications and integration requirements'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -160,7 +172,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Granular frontend implementation tasks'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -183,7 +197,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Granular backend implementation tasks'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -206,7 +222,9 @@ export const JOB_TEMPLATES: Job[] = [
         description: 'Granular AI implementation tasks'
       }
     ],
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -224,7 +242,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - produces code
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -242,7 +262,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - produces code
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -260,7 +282,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - produces code
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -278,7 +302,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - changes PR status
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -296,7 +322,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - changes PR status
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -314,7 +342,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - changes PR status
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -332,7 +362,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - changes ticket status to done/rejected-qa
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   },
@@ -350,7 +382,9 @@ export const JOB_TEMPLATES: Job[] = [
       }
     ],
     outputs: [], // No document outputs - changes ticket status to done/rejected-qa
-    automated: true, // Completes automatically when outputs produced
+    auto_start: true, // Starts automatically when inputs ready
+    auto_complete: true, // Completes automatically when outputs produced
+    in_progress: false, // Not currently being processed
     completed: false,
     paused: false,
   }

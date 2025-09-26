@@ -8,7 +8,8 @@
             [vcorpstate.events.project]
             [vcorpstate.events.websocket-events]
             [vcorpstate.events.navigation]
-            [vcorpstate.events.ui]))
+            [vcorpstate.events.ui]
+            [vcorpstate.events.dialogs]))
 
 ;; ====================================
 ;; CORE APP INITIALIZATION

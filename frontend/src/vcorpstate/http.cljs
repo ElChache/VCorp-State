@@ -31,3 +31,15 @@
      :error-handler #(rf/dispatch [:job/details-failed job-id %])
      :format (ajax/json-request-format)
      :response-format (ajax/json-response-format {:keywords? true})}))
+
+(defn create-project
+  "Create a new project"
+  [project-data]
+  (ajax/POST (str api-base-url "/api/projects")
+    {:params (-> project-data
+                 (select-keys [:name :description :path :github_origin])
+                 (assoc :templateId (:template_id project-data)))
+     :handler #(rf/dispatch [:create-project-success %])
+     :error-handler #(rf/dispatch [:create-project-error %])
+     :format (ajax/json-request-format)
+     :response-format (ajax/json-response-format {:keywords? true})}))
