@@ -26,7 +26,7 @@
 (rf/reg-event-fx
  :data/project-loaded
  (fn [{:keys [db]} [_ data]]
-    (let [{:keys [collections documents jobs squads roles timestamp]} data
+    (let [{:keys [collections documents jobs squads roles agents timestamp]} data
          ;; Normalize data by ID for fast lookups
          collections-by-id (into {} (map (fn [c] [(:id c) c])) collections)
          documents-by-id (into {} (map (fn [d] [(:id d) d])) documents)
@@ -35,6 +35,7 @@
          jobs-by-slug (into {} (map (fn [j] [(:slug j) j])) jobs)
          squads-by-id (into {} (map (fn [s] [(:id s) s])) squads)
          roles-by-short-name (into {} (map (fn [r] [(:short_name r) r])) roles)
+         agents-by-id (into {} (map (fn [a] [(:id a) a])) agents)
          updated-db (-> db
                        (assoc-in [:data :collections] collections-by-id)
                        (assoc-in [:data :documents] documents-by-id)
@@ -43,6 +44,7 @@
                        (assoc-in [:data :jobs-by-slug] jobs-by-slug)
                        (assoc-in [:data :squads] squads-by-id)
                        (assoc-in [:data :roles] roles-by-short-name)
+                       (assoc-in [:data :agents] agents-by-id)
                        (assoc-in [:app :loading?] false)
                        (assoc-in [:data :last-updated] timestamp))]
      {:db updated-db
@@ -201,3 +203,34 @@
                 :name name
                 :path path
                 :document_type document_type}))))
+
+;; ====================================
+;; AGENT REAL-TIME UPDATES
+;; ====================================
+
+;; Handle agent creation
+(rf/reg-event-db
+ :data/agent-created
+ (fn [db [_ event]]
+   (let [agent {:id (:agent_id event)
+                :project_id (:project_id event)
+                :slug (:slug event)
+                :role (:role event)
+                :status (:status event)}]
+     (assoc-in db [:data :agents (:agent_id event)] agent))))
+
+;; Handle agent updates (status changes, etc.)
+(rf/reg-event-db
+ :data/agent-updated
+ (fn [db [_ event]]
+   (let [agent-id (:agent_id event)]
+     (-> db
+         (assoc-in [:data :agents agent-id :status] (:new_status event))
+         (assoc-in [:data :agents agent-id :role] (:role event))))))
+
+;; Handle agent deletion
+(rf/reg-event-db
+ :data/agent-deleted
+ (fn [db [_ event]]
+   (let [agent-id (:agent_id event)]
+     (update-in db [:data :agents] dissoc agent-id))))

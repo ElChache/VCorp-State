@@ -1,16 +1,7 @@
 (ns vcorpstate.components.sidebar
   (:require [re-frame.core :as rf]
-            [vcorpstate.routes :as routes]
             [vcorpstate.components.agents-section :refer [agents-section]]
             [vcorpstate.components.sidebar-utils :refer [sidebar-content-item]]))
-
-(defn sidebar-back-button
-  "Back button component for sidebar"
-  []
-  [:div {:class "h-16 flex items-center justify-center border-b border-gray-200"}
-   [:button {:class "p-1 hover:bg-gray-100 rounded transition-colors w-16 h-12 flex items-center justify-center"
-             :on-click #(routes/navigate-to-route! {:name :home})}
-    [:div {:class "text-gray-600 font-bold text-center" :style {:font-size "34px"}} "←"]]])
 
 (defn sidebar-icon-button
   "Single sidebar icon button component"
@@ -33,9 +24,8 @@
 (defn sidebar-icons-column
   "Fixed left column with navigation icons"
   []
-  [:div {:class "bg-white shadow-lg border-r border-gray-200"
-         :style {:position "absolute" :top "0" :left "0" :width "66px" :height "100vh" :z-index "100"}}
-   [sidebar-back-button]
+  [:div {:class "bg-white shadow-lg border-r border-gray-200 flex flex-col"
+         :style {:width "66px" :height "100vh"}}
    [:div {:class "flex-1 flex flex-col pt-4"}
     [sidebar-icon-button {:title "Agents" :icon "👥" :section :agents :hover-class "hover:bg-blue-50 hover:text-blue-600"}]
     [sidebar-icon-button {:title "Tickets" :icon "🎫" :section :tickets :hover-class "hover:bg-green-50 hover:text-green-600"}]
@@ -44,21 +34,21 @@
 (defn sidebar-expanded-panel
   "Expandable content panel that slides out from icons"
   [expanded-section]
-  (when (some? expanded-section)
-    [:div {:class "bg-white shadow-lg border-r border-gray-200 transition-all duration-300"
-           :style {:position "absolute" :top "0" :left "66px" :width "214px" :height "100vh" :z-index "90"}
-           :on-click (fn [e] (.stopPropagation e))}
-     [:div {:class "p-4"}
+  [:div {:class "bg-white shadow-lg border-r border-gray-200 transition-all duration-300 overflow-hidden"
+         :style {:width (if (some? expanded-section) "214px" "0px") :height "100vh" :overflow-y "scroll"}
+         :on-click (fn [e] (.stopPropagation e))}
+   (when (some? expanded-section)
+     [:div {:class "p-4 h-full flex flex-col" :style {:width "214px"}}
       (case expanded-section
         :agents [agents-section]
         :tickets [sidebar-content-section "Tickets" ["#001 - Setup issue" "#002 - Bug report" "#003 - Feature request"]]
         :documents [sidebar-content-section "Documents" ["README.md" "API_DOCS.md" "CHANGELOG.md"]]
-        nil)]]))
+        nil)])])
 
 (defn sidebar
   "Complete sidebar component with icons and expandable panel"
   []
   (let [expanded-section @(rf/subscribe [:expanded-sidebar-section])]
-    [:div
+    [:div {:class "flex"}
      [sidebar-icons-column]
      [sidebar-expanded-panel expanded-section]]))

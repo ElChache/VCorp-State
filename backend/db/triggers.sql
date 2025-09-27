@@ -45,6 +45,10 @@ DROP TRIGGER IF EXISTS update_job_document_snapshots_updated_at ON job_document_
 CREATE TRIGGER update_job_document_snapshots_updated_at BEFORE UPDATE ON job_document_snapshots
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_agents_updated_at ON agents;
+CREATE TRIGGER update_agents_updated_at BEFORE UPDATE ON agents
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- =====================================================
 -- DOCUMENT STATUS CHANGES
 -- =====================================================
@@ -260,17 +264,58 @@ CREATE TRIGGER collection_created_trigger
   EXECUTE FUNCTION notify_collection_change();
 
 -- =====================================================
--- AGENT ACTIVITY (Future - when agent system is built)
+-- AGENT CHANGES
 -- =====================================================
 
--- Placeholder for agent events
--- CREATE OR REPLACE FUNCTION notify_agent_activity()
--- RETURNS TRIGGER AS $$
--- BEGIN
---   -- Agent state changes, job assignments, etc.
---   RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql;
+CREATE OR REPLACE FUNCTION notify_agent_change()
+RETURNS TRIGGER AS $$
+DECLARE
+  payload JSON;
+BEGIN
+  payload = json_build_object(
+    'type', CASE 
+      WHEN TG_OP = 'INSERT' THEN 'agent_created'
+      WHEN TG_OP = 'UPDATE' THEN 'agent_updated'
+      WHEN TG_OP = 'DELETE' THEN 'agent_deleted'
+    END,
+    'agent_id', COALESCE(NEW.id, OLD.id),
+    'project_id', COALESCE(NEW.project_id, OLD.project_id),
+    'slug', COALESCE(NEW.slug, OLD.slug),
+    'role', COALESCE(NEW.role, OLD.role),
+    'status', COALESCE(NEW.status, OLD.status),
+    'old_status', CASE WHEN TG_OP = 'UPDATE' THEN OLD.status END,
+    'new_status', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN NEW.status END,
+    'timestamp', EXTRACT(EPOCH FROM NOW())
+  );
+  
+  PERFORM pg_notify('vcorp_events', payload::text);
+  
+  RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for agent creation
+DROP TRIGGER IF EXISTS agent_created_trigger ON agents;
+CREATE TRIGGER agent_created_trigger
+  AFTER INSERT ON agents
+  FOR EACH ROW
+  EXECUTE FUNCTION notify_agent_change();
+
+-- Trigger for agent status changes
+DROP TRIGGER IF EXISTS agent_updated_trigger ON agents;
+CREATE TRIGGER agent_updated_trigger
+  AFTER UPDATE OF status, role ON agents
+  FOR EACH ROW
+  WHEN (OLD.status IS DISTINCT FROM NEW.status OR
+        OLD.role IS DISTINCT FROM NEW.role)
+  EXECUTE FUNCTION notify_agent_change();
+
+-- Trigger for agent deletion (if needed)
+DROP TRIGGER IF EXISTS agent_deleted_trigger ON agents;
+CREATE TRIGGER agent_deleted_trigger
+  AFTER DELETE ON agents
+  FOR EACH ROW
+  EXECUTE FUNCTION notify_agent_change();
 
 -- =====================================================
 -- UTILITY FUNCTIONS

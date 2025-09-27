@@ -8,6 +8,7 @@ import {
 import { PROJECT_TEMPLATES } from '../templates/project-templates.js';
 import { JOB_TEMPLATES } from '../templates/jobs.js';
 import { ProjectSeedingService } from '../services/project-seeding.js';
+import { WorkflowService } from '../services/workflow.js';
 import { FileWatcherService } from '../services/file-watcher/index.js';
 import * as fs from 'fs';
 import { join } from 'path';
@@ -112,24 +113,15 @@ export function createProjectRoutes(
           roles.push(...createdRoles);
         }
 
-        // Create workflows
+        // Create workflows and their states using service
         const workflows = [];
         if (template.workflows && Object.keys(template.workflows).length > 0) {
-          const workflowsData = Object.values(template.workflows).map(workflow => ({
-            project_id: project.id,
-            slug: workflow.slug,
-            name: workflow.name,
-            description: workflow.description,
-            initial_state: workflow.initial_state,
-            states: workflow.states
-          }));
-
-          await tx.workflow.createMany({ data: workflowsData });
-
-          // Get created workflows
-          const createdWorkflows = await tx.workflow.findMany({
-            where: { project_id: project.id }
-          });
+          const workflowService = new WorkflowService(prisma);
+          const createdWorkflows = await workflowService.createWorkflowsWithStates(
+            project.id, 
+            template.workflows, 
+            tx
+          );
           workflows.push(...createdWorkflows);
         }
 
@@ -138,21 +130,33 @@ export function createProjectRoutes(
         if (template.jobs && template.jobs.length > 0) {
           const selectedJobs = JOB_TEMPLATES.filter(job => template.jobs.includes(job.slug));
           
-          const jobsData = selectedJobs.map(job => ({
-            project_id: project.id,
-            slug: job.slug,
-            name: job.name,
-            description: job.description,
-            role: Array.isArray(job.role) ? job.role[0] : job.role,
-            workflow_slug: job.workflow_slug,
-            inputs: job.inputs,
-            outputs: job.outputs,
-            auto_start: job.auto_start,
-            auto_complete: job.auto_complete,
-            in_progress: job.in_progress,
-            completed: job.completed,
-            paused: job.paused
-          }));
+          // Create a slug-to-id mapping for workflows
+          const workflowMap = new Map();
+          workflows.forEach(w => workflowMap.set(w.slug, w.id));
+          
+          const jobsData = selectedJobs.map(job => {
+            // Find workflow ID by slug
+            const workflowId = workflowMap.get(job.workflow_slug);
+            if (!workflowId) {
+              throw new Error(`Workflow with slug '${job.workflow_slug}' not found for job '${job.slug}'`);
+            }
+            
+            return {
+              project_id: project.id,
+              slug: job.slug,
+              name: job.name,
+              description: job.description,
+              role: Array.isArray(job.role) ? job.role[0] : job.role,
+              workflow_id: workflowId,
+              inputs: job.inputs,
+              outputs: job.outputs,
+              auto_start: job.auto_start,
+              auto_complete: job.auto_complete,
+              in_progress: job.in_progress,
+              completed: job.completed,
+              paused: job.paused
+            };
+          });
 
           await tx.job.createMany({ data: jobsData });
 

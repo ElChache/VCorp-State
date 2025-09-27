@@ -180,7 +180,7 @@ export class DatabaseService {
       name: job.name,
       description: job.description,
       role: job.role,
-      workflow_slug: job.workflow_slug,
+      workflow_id: job.workflow_id,
       inputs: job.inputs,
       outputs: job.outputs,
       auto_start: job.auto_start,

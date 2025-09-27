@@ -68,6 +68,11 @@
  (fn [db _]
    (get-in db [:data :roles])))
 
+(rf/reg-sub
+ :data/agents
+ (fn [db _]
+   (get-in db [:data :agents])))
+
 ;; ====================================
 ;; COMPUTED DATA SUBSCRIPTIONS
 ;; ====================================

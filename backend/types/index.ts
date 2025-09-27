@@ -40,22 +40,87 @@ export interface Project {
 }
 
 export interface WorkflowState {
-  id: string;
-  name: string;
+  id: number;
+  workflow_id: number;
+  slug: string;
+  state_name: string;
   instruction: string;
-  auto_command: string | null;
+  auto_command?: string;
   allowed_commands: string[];
   allowed_paths: string[];
-  timeout: number | null;
+  timeout?: number;
   transitions: Record<string, string>;
+  previous_state_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Common transition types for better type safety
+export type TransitionTrigger = 'success' | 'failure' | 'timeout' | 'error' | 'approved' | 'rejected' | 'no_work' | 'work_available' | 'needs_changes' | 'manual_reset' | 'passed' | 'failed';
+
+export interface WorkflowStateTemplate {
+  slug: string;
+  name: string;
+  instruction: string;
+  auto_command?: string;
+  allowed_commands: string[];
+  allowed_paths: string[];
+  timeout?: number;
+  transitions: Record<TransitionTrigger | string, string>;
+}
+
+// Enhanced error types
+export class WorkflowValidationError extends Error {
+  constructor(message: string, public workflowSlug?: string, public stateSlug?: string) {
+    super(message);
+    this.name = 'WorkflowValidationError';
+  }
+}
+
+export class ProjectCreationError extends Error {
+  constructor(message: string, public step?: string, public originalError?: Error) {
+    super(message);
+    this.name = 'ProjectCreationError';
+  }
 }
 
 export interface Workflow {
   slug: string;
   name: string;
   description: string;
-  initial_state: string;
-  states: Record<string, WorkflowState>;
+  states: WorkflowStateTemplate[];
+}
+
+export interface DatabaseWorkflow extends Workflow {
+  id: number;
+  project_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Base template interface for common fields
+export interface BaseTemplate {
+  slug: string;
+  name: string;
+  description: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Document collection slug reference for jobs
+export interface DocumentReference {
+  slug: string;
+  description: string;
+}
+
+export interface AgentJobStatus {
+  id: number;
+  agent_id: number;
+  job_id: number;
+  current_workflow_state_id?: number;
+  last_worked_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DocumentCollection {
@@ -97,24 +162,11 @@ export interface DatabaseDocument extends Document {
   last_updated_at: string; // When document content was last modified
 }
 
-export interface JobInput {
-  slug: string; // Document slug or collection slug
-  description: string;
-}
-
-export interface JobOutput {
-  slug: string; // Document slug or collection slug
-  description: string;
-}
-
-export interface Job {
-  slug: string;
-  name: string;
-  description: string;
+export interface Job extends BaseTemplate {
   role: string | string[];
-  workflow_slug: string;
-  inputs: JobInput[];
-  outputs: JobOutput[];
+  workflow_id: number;
+  inputs: DocumentReference[];
+  outputs: DocumentReference[];
   auto_start: boolean; // If true, job starts automatically when inputs are ready
   auto_complete: boolean; // If true, job completes automatically when outputs are produced
   in_progress: boolean; // If true, job is currently being processed

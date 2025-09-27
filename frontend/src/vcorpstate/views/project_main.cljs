@@ -2,16 +2,13 @@
   (:require [re-frame.core :as rf]
             [reagent.core :as r]
             [vcorpstate.components.sidebar :as sidebar]
-            [vcorpstate.components.main-content :as main-content]
             [vcorpstate.components.graph :as graph]))
 
 (defn project-main-view
   "Main project view with sidebar and graph"
   []
-  (let [selected-project @(rf/subscribe [:selected-project])
-        selected-project-id @(rf/subscribe [:selected-project-id])
-        expanded-section @(rf/subscribe [:expanded-sidebar-section])
-        has-data? @(rf/subscribe [:data/loaded?])]
+  (let [selected-project-id @(rf/subscribe [:selected-project-id])
+        expanded-section @(rf/subscribe [:expanded-sidebar-section])]
     
     ;; Initialize project data and WebSocket when component mounts
     (r/create-class
@@ -22,7 +19,7 @@
           (rf/dispatch [:websocket/connect selected-project-id])))
       
       :component-did-update
-      (fn [this [_ prev-props]]
+      (fn [_this [_ prev-props]]
         (let [[_ prev-project-id] prev-props]
           (when (and selected-project-id 
                      (not= selected-project-id prev-project-id))
@@ -31,12 +28,12 @@
       
       :reagent-render
       (fn []
-        [:div {:class "relative h-screen bg-gray-50"
+        [:div {:class "flex h-screen bg-gray-50"
                :on-click #(when expanded-section (rf/dispatch [:toggle-sidebar-section nil]))}
          
-         ;; Main content area - now shows the graph
-         [:div {:class "h-full" :style {:margin-left "66px"}}
-          [graph/graph-component]]
-         
          ;; Sidebar component
-         [sidebar/sidebar]])})))
+         [sidebar/sidebar]
+         
+         ;; Main content area - now shows the graph
+         [:div {:class "flex-1 h-full transition-all duration-300"}
+          [graph/graph-component]]])})))

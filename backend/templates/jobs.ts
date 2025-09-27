@@ -156,7 +156,7 @@ export const JOB_TEMPLATES: Job[] = [
 
   {
     slug: 'create_fe_subtickets',
-    name: 'Create Frontend Sub-tickets',
+    name: 'Enhance Frontend tickets with subtickets',
     description: 'Break frontend tickets into granular implementation sub-tickets',
     role: 'fe_lead', // Frontend Lead
     workflow_slug: 'document_creation',
@@ -168,8 +168,8 @@ export const JOB_TEMPLATES: Job[] = [
     ],
     outputs: [
       {
-        slug: 'fe_subtickets',
-        description: 'Granular frontend implementation tasks'
+        slug: 'enhanced_fe_tickets',
+        description: 'Frontend tickets enhanced with granular implementation subtickets'
       }
     ],
     auto_start: true, // Starts automatically when inputs ready
@@ -181,7 +181,7 @@ export const JOB_TEMPLATES: Job[] = [
 
   {
     slug: 'create_be_subtickets',
-    name: 'Create Backend Sub-tickets',
+    name: 'Enhance Backend tickets with subtickets',
     description: 'Break backend tickets into granular implementation sub-tickets',
     role: 'be_lead', // Backend Lead
     workflow_slug: 'document_creation',
@@ -193,8 +193,8 @@ export const JOB_TEMPLATES: Job[] = [
     ],
     outputs: [
       {
-        slug: 'be_subtickets',
-        description: 'Granular backend implementation tasks'
+        slug: 'enhanced_be_tickets',
+        description: 'Backend tickets enhanced with granular implementation subtickets'
       }
     ],
     auto_start: true, // Starts automatically when inputs ready
@@ -206,7 +206,7 @@ export const JOB_TEMPLATES: Job[] = [
 
   {
     slug: 'create_ai_subtickets',
-    name: 'Create AI Sub-tickets',
+    name: 'Enhance AI tickets with subtickets',
     description: 'Break AI tickets into granular implementation sub-tickets',
     role: 'ai_lead', // AI Lead
     workflow_slug: 'document_creation',
@@ -218,8 +218,8 @@ export const JOB_TEMPLATES: Job[] = [
     ],
     outputs: [
       {
-        slug: 'ai_subtickets',
-        description: 'Granular AI implementation tasks'
+        slug: 'enhanced_ai_tickets',
+        description: 'AI tickets enhanced with granular implementation subtickets'
       }
     ],
     auto_start: true, // Starts automatically when inputs ready
@@ -237,8 +237,8 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'frontend_development',
     inputs: [
       {
-        slug: 'fe_subtickets',
-        description: 'Frontend sub-tickets ready for implementation'
+        slug: 'enhanced_fe_tickets',
+        description: 'Frontend tickets enhanced with subtickets ready for implementation'
       }
     ],
     outputs: [], // No document outputs - produces code
@@ -257,8 +257,8 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'backend_development',
     inputs: [
       {
-        slug: 'be_subtickets',
-        description: 'Backend sub-tickets ready for implementation'
+        slug: 'enhanced_be_tickets',
+        description: 'Backend tickets enhanced with subtickets ready for implementation'
       }
     ],
     outputs: [], // No document outputs - produces code
@@ -277,8 +277,8 @@ export const JOB_TEMPLATES: Job[] = [
     workflow_slug: 'backend_development', // Reuse backend workflow for now
     inputs: [
       {
-        slug: 'ai_subtickets',
-        description: 'AI sub-tickets ready for implementation'
+        slug: 'enhanced_ai_tickets',
+        description: 'AI tickets enhanced with subtickets ready for implementation'
       }
     ],
     outputs: [], // No document outputs - produces code

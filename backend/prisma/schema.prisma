@@ -43,6 +43,7 @@ model Agent {
   // Relations
   project  Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
   role_ref Role    @relation(fields: [project_id, role], references: [project_id, short_name])
+  job_statuses AgentJobStatus[]
 
   @@unique([project_id, slug])
   @@map("agents")
@@ -91,14 +92,13 @@ model Workflow {
   slug          String   @db.VarChar(100)
   name          String   @db.VarChar(255)
   description   String   @db.Text
-  initial_state String   @db.VarChar(100)
-  states        Json     @db.JsonB
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now()) @updatedAt
 
   // Relations
   project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
   jobs    Job[]
+  workflow_states WorkflowState[]
 
   @@unique([project_id, slug])
   @@map("workflows")
@@ -111,7 +111,7 @@ model Job {
   name               String    @db.VarChar(255)
   description        String    @db.Text
   role               String    @db.VarChar(50)
-  workflow_slug      String    @db.VarChar(100)
+  workflow_id        Int
   inputs             Json      @default("[]") @db.JsonB
   outputs            Json      @default("[]") @db.JsonB
   auto_start         Boolean   @default(true)
@@ -126,9 +126,10 @@ model Job {
 
   // Relations
   project  Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  workflow Workflow @relation(fields: [project_id, workflow_slug], references: [project_id, slug])
+  workflow Workflow @relation(fields: [workflow_id], references: [id])
 
   snapshots JobDocumentSnapshot[]
+  agent_job_statuses AgentJobStatus[]
 
   @@unique([project_id, slug])
   @@map("jobs")
@@ -183,6 +184,50 @@ model Document {
 
   @@unique([project_id, slug])
   @@map("documents")
+}
+
+model WorkflowState {
+  id                Int       @id @default(autoincrement())
+  workflow_id       Int
+  slug              String    @db.VarChar(100)
+  state_name        String    @db.VarChar(100)
+  instruction       String    @db.Text
+  auto_command      String?   @db.Text
+  allowed_commands  Json      @default("[]") @db.JsonB
+  allowed_paths     Json      @default("[]") @db.JsonB
+  timeout           Int?
+  transitions       Json      @default("{}") @db.JsonB
+  previous_state_id Int?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @default(now()) @updatedAt
+
+  // Relations
+  workflow       Workflow        @relation(fields: [workflow_id], references: [id], onDelete: Cascade)
+  previous_state WorkflowState?  @relation("WorkflowStateSequence", fields: [previous_state_id], references: [id])
+  next_states    WorkflowState[] @relation("WorkflowStateSequence")
+  
+  agent_job_statuses AgentJobStatus[]
+
+  @@unique([workflow_id, slug])
+  @@map("workflow_states")
+}
+
+model AgentJobStatus {
+  id                        Int       @id @default(autoincrement())
+  agent_id                  Int
+  job_id                    Int
+  current_workflow_state_id Int?
+  last_worked_at            DateTime?
+  created_at                DateTime  @default(now())
+  updated_at                DateTime  @default(now()) @updatedAt
+
+  // Relations
+  agent                Agent         @relation(fields: [agent_id], references: [id], onDelete: Cascade)
+  job                  Job           @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  current_workflow_state WorkflowState? @relation(fields: [current_workflow_state_id], references: [id])
+
+  @@unique([agent_id, job_id])
+  @@map("agent_job_statuses")
 }
 
 model JobDocumentSnapshot {
